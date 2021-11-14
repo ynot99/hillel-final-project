@@ -1,0 +1,16 @@
+.footer {
+  background-color: #1d2023; //#2c3135;
+  margin: auto 0 0;
+  height: 48px;
+
+  .wrapper {
+    height: inherit;
+    display: flex;
+    align-items: center;
+  }
+
+  &__copyright {
+    font-size: 0.875rem;
+    color: #bdcdd6;
+  }
+}

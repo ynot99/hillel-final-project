@@ -1,0 +1,152 @@
+.wrapper {
+  max-width: 1096px;
+  margin: 0 auto;
+  padding: 0 25px;
+}
+
+.btn,
+.btn2,
+.btn3 {
+  border-radius: 3px;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 0.8125rem;
+  padding: 10px 13px;
+}
+
+.btn {
+  background-color: #ffffff;
+  border: 1px solid #75aeca;
+  color: #548eaa;
+  transition: background-color 0.3s ease, color 0.3s ease 0.15s;
+}
+.btn:hover {
+  background-color: #7aa1bd;
+  color: #ffffff;
+}
+
+.btn2 {
+  background-color: #ffffff;
+  border: 1px solid #75aeca;
+  color: #548eaa;
+  transition: color 0.3s ease;
+}
+.btn2:hover {
+  color: #487284;
+}
+
+.btn3 {
+  background-color: #548eaa;
+  border: 1px solid #75aeca;
+  color: #ffffff;
+  transition: background-color 0.3s ease;
+}
+.btn3:hover {
+  background-color: #76a5bb;
+}
+
+.block {
+  background-color: #ffffff;
+  padding: 16px 20px;
+
+  &.block-focus:focus {
+    outline: 1px solid #75aeca;
+  }
+}
+
+.main-section {
+  padding: 12px 0;
+}
+
+.article-data {
+  &__item {
+    display: inline-block;
+    margin-right: 40px;
+  }
+  &__item.button {
+    outline: none;
+    border: 0;
+    background-color: transparent;
+    cursor: pointer;
+  }
+  &__item.active &__number {
+    color: #548eaa;
+  }
+  &__item.loading {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  &__item:last-child {
+    margin-right: 0;
+  }
+
+  &__number {
+    font-size: 0.8125rem;
+    color: #798e98;
+  }
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+
+  &__avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 3px;
+  }
+  &__profile {
+    display: flex;
+    align-items: center;
+    margin-right: 5px;
+  }
+
+  &__avatar {
+    margin-right: 8px;
+  }
+  &__username {
+    color: #414b50;
+    font-size: 0.8125rem;
+    transition: color 0.3s ease;
+  }
+  &__username:hover {
+    color: #487284;
+  }
+
+  &__date {
+    color: #777;
+    font-size: 0.8125rem;
+  }
+}
+
+.user-menu {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+  background-color: #ffffff;
+
+  &__button {
+    border: none;
+    outline: none;
+    background: transparent;
+    cursor: pointer;
+    height: 100%;
+  }
+
+  &__menu {
+    display: flex;
+    max-height: 100vh;
+    min-width: 300px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    position: absolute;
+    top: 55px;
+    right: 0;
+  }
+
+  &__login {
+    margin-right: 12px;
+  }
+}

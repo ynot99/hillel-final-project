@@ -1,0 +1,42 @@
+.navigation {
+  background-color: #ffffff;
+  border-bottom: 1px solid #dedede;
+  height: 56px;
+  position: sticky;
+  top: 0;
+
+  .wrapper {
+    display: flex;
+    justify-content: space-between;
+    height: inherit;
+  }
+
+  &__list {
+    display: flex;
+    flex: 1;
+    height: inherit;
+  }
+  &__item {
+    padding: 0 10px;
+  }
+  &__item:first-child {
+    padding-left: 0;
+  }
+  &__item:last-child {
+    padding-right: 0;
+  }
+  &__link {
+    color: #909090;
+    font-size: 0.875rem;
+    transition: color 0.3s ease;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  &__link.active {
+    color: #333333;
+  }
+  &__link:hover {
+    color: #5096b1;
+  }
+}
