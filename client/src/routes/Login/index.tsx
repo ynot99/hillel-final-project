@@ -19,8 +19,8 @@ const Login = () => {
         },
       ]}
       submitText="Login"
-      resultFunc={(result) => {
-        localStorage.setItem("auth-token", result["token"]);
+      resultFunc={(result: { token: string }) => {
+        localStorage.setItem("auth-token", result.token);
       }}
     />
   );

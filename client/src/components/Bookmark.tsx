@@ -1,7 +1,16 @@
 import { useReducer } from "react";
 
-const Bookmark = ({ id, isActive, count }) => {
-  const bookmarkReducer = (state, action) => {
+interface BookmarkProps {
+  id: number;
+  isActive: boolean;
+  count: number;
+}
+
+const Bookmark = ({ id, isActive, count }: BookmarkProps) => {
+  const bookmarkReducer = (
+    state: { isActive: boolean; isLoading: boolean; number: number },
+    action: { type: string }
+  ) => {
     switch (action.type) {
       case "toggleIsActive":
         return {
@@ -56,12 +65,16 @@ const Bookmark = ({ id, isActive, count }) => {
       url += "create";
     }
     const authToken = localStorage.getItem("auth-token");
+    const requestHeaders: HeadersInit = new Headers();
+    requestHeaders.set("Content-Type", "application/json");
+    requestHeaders.set(
+      "Authorization",
+      `${authToken === null ? undefined : `Token ${authToken}`}`
+    );
+
     fetch(url, {
       method: method,
-      headers: {
-        Authorization: authToken === null ? undefined : `Token  ${authToken}`,
-        "Content-Type": "application/json",
-      },
+      headers: requestHeaders,
       body: JSON.stringify({ post: id }),
     })
       .then((response) => {

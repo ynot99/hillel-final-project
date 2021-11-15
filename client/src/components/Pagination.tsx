@@ -2,7 +2,13 @@ import "./Pagination.scss";
 
 import { Link } from "react-router-dom";
 
-const Pagination = ({ pagesCount, currentPage, pageLink }) => {
+interface PaginationProps {
+  pagesCount: number;
+  currentPage: number;
+  pageLink: string;
+}
+
+const Pagination = ({ pagesCount, currentPage, pageLink }: PaginationProps) => {
   return (
     <div className="pagination">
       <Link className="pagination__link" to={`/${pageLink}/${1}`}>

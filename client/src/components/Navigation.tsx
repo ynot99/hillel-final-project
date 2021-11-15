@@ -1,11 +1,15 @@
 import "./Navigation.scss";
 
 import { Link, NavLink } from "react-router-dom";
-import { useEffect, useState, useContext } from "react";
+import { useState, useContext } from "react";
 
 import { AuthContext } from "../App";
 
-const Navigation = ({ Avatar }) => {
+interface NavigationProps {
+  Avatar?: HTMLImageElement;
+}
+
+const Navigation = ({ Avatar }: NavigationProps) => {
   const authContext = useContext(AuthContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 

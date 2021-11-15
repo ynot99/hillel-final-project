@@ -7,6 +7,7 @@ import NotFound from "./NotFound";
 import Form from "./Form";
 import Post from "./Post";
 import Logout from "./Logout";
+import Navigation from "./Navigation";
 
 export {
   Header,
@@ -18,4 +19,5 @@ export {
   Form,
   Post,
   Logout,
+  Navigation,
 };

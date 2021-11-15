@@ -4,10 +4,9 @@ import React from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 
 import { Login, Main, Register, PostView } from "./routes";
-import { Footer, Header, Logout, NotFound } from "./components";
-import Navigation from "./components/Navigation";
+import { Footer, Header, Logout, NotFound, Navigation } from "./components";
 
-export const AuthContext = React.createContext();
+export const AuthContext = React.createContext(false);
 
 const App = () => {
   return (
@@ -15,7 +14,7 @@ const App = () => {
       <BrowserRouter>
         <Header />
         <main className="main">
-          <Navigation />
+          <Navigation Avatar={undefined} />
           <section className="main-section">
             <div className="wrapper">
               <Routes>
