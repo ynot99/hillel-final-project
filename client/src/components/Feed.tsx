@@ -53,13 +53,15 @@ const Feed = ({ articleList }: FeedProps) => {
                 </Link>
                 <span className="user-info__date">{created_at}</span>
               </div>
-              <h2 className="post__heading">{item.header}</h2>
+              <Link className="post__heading-link" to={`/post/${item.id}`}>
+                <h2 className="post__heading">{item.header}</h2>
+              </Link>
               <div className="post__article-part">
                 <p className="post__paragraph">{item.content}</p>
               </div>
-              <a className="post__read-more btn" href={`post/${item.id}`}>
+              <Link className="post__read-more btn" to={`/post/${item.id}`}>
                 Read more
-              </a>
+              </Link>
               <div className="post__article-data article-data">
                 <div className="article-data__item">
                   <span

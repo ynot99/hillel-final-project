@@ -20,8 +20,6 @@ const Main = ({ limit = 5 }) => {
     })
       .then((response) => {
         if (response.ok) {
-          // console.log(response.text());
-          // throw new Error("Something went wrong");
           return response.json();
         } else {
           console.log(response.text());
@@ -36,23 +34,24 @@ const Main = ({ limit = 5 }) => {
       });
   }, []);
 
-  // const pagesCount = Math.ceil(articles.length / limit);
-  // const { pageNum } = useParams();
+  const pagesCount = Math.ceil(articles.length / limit);
+  const { pageNum } = useParams();
 
-  // let currentPage = 1;
+  let currentPage = 1;
 
-  // console.log(typeof pageNum);
+  if (typeof pageNum === "string") {
+    let convertedPageNum = parseInt(pageNum);
 
-  // if (typeof pageNum === "string" && !Number.isNaN(pageNum)) {
-  //   let convertedPageNum = parseInt(pageNum);
-  //   if (convertedPageNum < 1 || convertedPageNum > pagesCount) {
-  //     return <NotFound />;
-  //   } else {
-  //     currentPage = convertedPageNum;
-  //   }
-  // } else {
-  //   return <NotFound />;
-  // }
+    if (
+      isNaN(convertedPageNum) ||
+      convertedPageNum < 1 ||
+      convertedPageNum > pagesCount
+    ) {
+      return <NotFound />;
+    } else {
+      currentPage = convertedPageNum;
+    }
+  }
 
   return (
     <>
@@ -60,11 +59,11 @@ const Main = ({ limit = 5 }) => {
       {articles.length ? (
         <>
           <Feed articleList={articles} />
-          {/* <Pagination
+          <Pagination
             pagesCount={pagesCount}
             currentPage={currentPage}
             pageLink={pageType || "/"}
-          /> */}
+          />
         </>
       ) : (
         "no data"

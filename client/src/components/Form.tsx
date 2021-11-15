@@ -1,4 +1,4 @@
-import React, { FormEventHandler, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 interface FormProps {
@@ -34,7 +34,7 @@ const Form = ({
       initialFormData[item.name] = "";
     }
     setFormData(initialFormData);
-  }, []);
+  }, [inputs]);
 
   const handleSubmit = (event: React.ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
