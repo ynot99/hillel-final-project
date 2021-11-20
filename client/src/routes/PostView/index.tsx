@@ -1,42 +1,48 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 
+import CommentSection from "../../components/CommentSection";
 import { Post } from "../../components";
+
+import { promiseCopyPaste, getAuthTokenHeaders } from "../../utils";
+
+import IComment from "../../interfaces/Comment";
+import IPost from "../../interfaces/Post";
 
 const PostView = () => {
   const pageParams = useParams();
-  const [post, setPost] = useState();
+  const [postViewData, setPostViewData] =
+    useState<{ post: IPost; comments: Array<IComment> }>();
 
   useEffect(() => {
-    const authToken = localStorage.getItem("auth-token");
-    const requestHeaders: HeadersInit = new Headers();
-    requestHeaders.set("Content-Type", "application/json");
-    requestHeaders.set(
-      "Authorization",
-      `${authToken === null ? undefined : `Token ${authToken}`}`
+    promiseCopyPaste(
+      fetch(`/api/v1/blog/post/${pageParams["postNum"]}`, {
+        method: "GET",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          ...getAuthTokenHeaders(),
+        }),
+      }),
+      (result: any) => {
+        setPostViewData(result);
+      }
     );
-
-    fetch(`/api/v1/blog/post/${pageParams["postNum"]}`, {
-      method: "GET",
-      headers: requestHeaders,
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          console.log(response.text());
-          throw new Error("Something went wrong");
-        }
-      })
-      .then((result) => {
-        console.log(result);
-        setPost(result);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
   }, [pageParams]);
-  return <Post postData={post} />;
+  return (
+    <>
+      {postViewData ? (
+        <>
+          <Post postData={postViewData.post} />
+          <CommentSection
+            postID={postViewData.post.id}
+            comments={postViewData.comments}
+          />
+        </>
+      ) : (
+        "no data"
+      )}
+    </>
+  );
 };
 
 export default PostView;

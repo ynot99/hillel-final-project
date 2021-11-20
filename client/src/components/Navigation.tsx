@@ -1,26 +1,29 @@
 import "./Navigation.scss";
 
-import { Link, NavLink } from "react-router-dom";
-import { useState, useContext } from "react";
+import { NavLink } from "react-router-dom";
+import { useContext, Fragment } from "react";
 
 import { AuthContext } from "../App";
+import UserMenu from "./UserMenu";
 
-interface NavigationProps {
-  Avatar?: HTMLImageElement;
-}
-
-const Navigation = ({ Avatar }: NavigationProps) => {
+const Navigation = () => {
   const authContext = useContext(AuthContext);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const links = [
     {
-      to: "/feed",
-      name: "My feed",
+      to: "/following",
+      name: "Following",
+      authenticationRequired: true,
     },
     {
       to: "/all",
       name: "All posts",
+      authenticationRequired: false,
+    },
+    {
+      to: "/bookmarked",
+      name: "Bookmarked",
+      authenticationRequired: true,
     },
   ];
   return (
@@ -28,48 +31,27 @@ const Navigation = ({ Avatar }: NavigationProps) => {
       <div className="wrapper">
         <ul className="navigation__list">
           {links.map((item) => {
-            return (
-              <li key={item["to"]} className="navigation__item">
-                <NavLink
-                  className={(isActive) =>
-                    "navigation__link" + (isActive.isActive ? " active" : "")
-                  }
-                  to={item["to"]}
-                >
-                  {item["name"]}
-                </NavLink>
-              </li>
-            );
+            if (
+              (item.authenticationRequired && authContext.user) ||
+              !item.authenticationRequired
+            ) {
+              return (
+                <li key={item["to"]} className="navigation__item">
+                  <NavLink
+                    className={(isActive) =>
+                      "navigation__link" + (isActive.isActive ? " active" : "")
+                    }
+                    to={item["to"]}
+                  >
+                    {item["name"]}
+                  </NavLink>
+                </li>
+              );
+            }
+            return <Fragment key={item["to"]}></Fragment>;
           })}
         </ul>
-        <div className="navigation__user-menu user-menu">
-          <button
-            onClick={() => {
-              setIsMenuOpen(!isMenuOpen);
-            }}
-            className="user-menu__button"
-          >
-            user menu
-          </button>
-          {isMenuOpen ? (
-            <div className="user-menu__menu block">
-              {authContext ? (
-                <Link className="user-menu__login btn2" to="/logout">
-                  Log out
-                </Link>
-              ) : (
-                <>
-                  <Link className="user-menu__login btn2" to="/login">
-                    Login
-                  </Link>
-                  <Link className="user-menu__register btn3" to="/register">
-                    Sign Up
-                  </Link>
-                </>
-              )}
-            </div>
-          ) : null}
-        </div>
+        <UserMenu />
       </div>
     </nav>
   );

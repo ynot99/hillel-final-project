@@ -1,5 +1,7 @@
 import { useReducer } from "react";
 
+import { getAuthTokenHeaders, promiseCopyPaste } from "../utils";
+
 interface BookmarkProps {
   id: number;
   isActive: boolean;
@@ -56,50 +58,32 @@ const Bookmark = ({ id, isActive, count }: BookmarkProps) => {
 
     bookmarkDispatch({ type: "loading" });
 
-    let url = "/api/v1/blog/post/bookmark/";
-    let method = "POST";
+    let url = "create";
     if (bookmarkState["isActive"]) {
-      url += "delete";
-      method = "DELETE";
-    } else {
-      url += "create";
+      url = "delete";
     }
-    const authToken = localStorage.getItem("auth-token");
-    const requestHeaders: HeadersInit = new Headers();
-    requestHeaders.set("Content-Type", "application/json");
-    requestHeaders.set(
-      "Authorization",
-      `${authToken === null ? undefined : `Token ${authToken}`}`
-    );
 
-    fetch(url, {
-      method: method,
-      headers: requestHeaders,
-      body: JSON.stringify({ post: id }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          if (method === "POST") {
-            return response.json();
-          } else {
-            return {};
-          }
-        } else {
-          throw new Error("Something went wrong");
-        }
-      })
-      .then((result) => {
+    promiseCopyPaste(
+      fetch(`/api/v1/blog/post/bookmark/${url}`, {
+        method: url === "create" ? "POST" : "DELETE",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          ...getAuthTokenHeaders(),
+        }),
+        body: JSON.stringify({ post: id }),
+      }),
+      (result: any) => {
         if (bookmarkState["isActive"]) {
           bookmarkDispatch({ type: "decrement" });
         } else {
           bookmarkDispatch({ type: "increment" });
         }
         bookmarkDispatch({ type: "toggleIsActive" });
-      })
-      .catch((err) => {
+      },
+      (err: Error) => {
         bookmarkDispatch({ type: "error" });
-        console.error(err);
-      });
+      }
+    );
   };
 
   return (

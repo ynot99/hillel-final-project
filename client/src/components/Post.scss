@@ -9,17 +9,31 @@
     transition: color 0.5s ease;
   }
 
-  &__article-part,
+  // &__article-part,
   &__article-data {
     padding-top: 16px;
   }
+  &__article-data.paddingless {
+    padding-top: 0;
+  }
 
-  &__paragraph {
+  &__article-part {
+    color: #111;
     font-size: 1rem;
-    line-height: 1.5rem;
+    line-height: 1.56;
+    overflow-wrap: break-word;
+
+    p,
+    h2,
+    h3,
+    ul,
+    li,
+    blockquote {
+      margin: 20px 0;
+    }
   }
 
-  &__read-more {
-    margin-top: 18px;
-  }
+  // &__read-more {
+  //   margin-top: 18px;
+  // }
 }

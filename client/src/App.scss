@@ -6,7 +6,9 @@
 
 .btn,
 .btn2,
-.btn3 {
+.btn3,
+.btn4,
+.btn5 {
   border-radius: 3px;
   cursor: pointer;
   display: inline-block;
@@ -43,6 +45,50 @@
 }
 .btn3:hover {
   background-color: #76a5bb;
+}
+
+.btn4 {
+  border: 1px solid;
+  background-color: #548eaa;
+  border-color: #548eaa;
+  color: #fff;
+}
+.btn4:disabled {
+  background-color: initial;
+  border-color: #d2d2d2;
+  color: #737d81;
+  cursor: not-allowed;
+}
+
+.btn5 {
+  background-color: #ffffff;
+  border: 1px solid #70b025;
+  color: #579311;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+.btn5.danger {
+  border-color: red;
+  color: red;
+}
+.btn5:hover {
+  color: #ffffff;
+  background-color: #579311;
+}
+.btn5.danger:hover {
+  background-color: red;
+  color: #ffffff;
+}
+
+.link {
+  color: #548eaa;
+  display: block;
+  font-size: 0.8125rem;
+  line-height: 0.9375rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.link:hover {
+  color: #487284;
 }
 
 .block {
@@ -83,70 +129,5 @@
   &__number {
     font-size: 0.8125rem;
     color: #798e98;
-  }
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-
-  &__avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 3px;
-  }
-  &__profile {
-    display: flex;
-    align-items: center;
-    margin-right: 5px;
-  }
-
-  &__avatar {
-    margin-right: 8px;
-  }
-  &__username {
-    color: #414b50;
-    font-size: 0.8125rem;
-    transition: color 0.3s ease;
-  }
-  &__username:hover {
-    color: #487284;
-  }
-
-  &__date {
-    color: #777;
-    font-size: 0.8125rem;
-  }
-}
-
-.user-menu {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  position: relative;
-  background-color: #ffffff;
-
-  &__button {
-    border: none;
-    outline: none;
-    background: transparent;
-    cursor: pointer;
-    height: 100%;
-  }
-
-  &__menu {
-    display: flex;
-    max-height: 100vh;
-    min-width: 300px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-    position: absolute;
-    top: 55px;
-    right: 0;
-  }
-
-  &__login {
-    margin-right: 12px;
   }
 }

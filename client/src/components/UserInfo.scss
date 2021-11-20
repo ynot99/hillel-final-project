@@ -1,0 +1,33 @@
+.user-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+
+  &__avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 3px;
+  }
+  &__profile {
+    display: flex;
+    align-items: center;
+    margin-right: 5px;
+  }
+
+  &__avatar {
+    margin-right: 8px;
+  }
+  &__username {
+    color: #414b50;
+    font-size: 0.8125rem;
+    transition: color 0.3s ease;
+  }
+  &__username:hover {
+    color: #487284;
+  }
+
+  &__date {
+    color: #777;
+    font-size: 0.8125rem;
+  }
+}

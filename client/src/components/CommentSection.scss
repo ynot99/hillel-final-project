@@ -1,0 +1,47 @@
+.comment-section {
+  margin-top: 12px;
+  background-color: #ffffff;
+
+  &__header {
+    align-items: center;
+    border-bottom: 1px solid #d5dddf;
+    box-sizing: border-box;
+    display: flex;
+    min-height: 55px;
+    padding: 15px 16px;
+  }
+  &__heading {
+    color: #333;
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+  &__heading-number {
+    color: #4b8eab;
+    margin-left: 8px;
+  }
+
+  &__comment-list {
+  }
+  &__comment {
+    padding: 16px 20px;
+  }
+
+  &__content {
+  }
+
+  &__reply {
+    background: transparent;
+    border: 0;
+    outline: none;
+    user-select: none;
+    cursor: pointer;
+    color: #548eaa;
+    font-weight: 400;
+    padding: 0 12px;
+    display: inline-block;
+  }
+
+  &__footer {
+    margin-top: 12px;
+  }
+}

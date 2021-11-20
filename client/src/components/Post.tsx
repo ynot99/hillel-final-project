@@ -1,26 +1,13 @@
 import "./Post.scss";
-import no_avatar from "../assets/img/no-user-image.gif";
 
-import moment from "moment";
-import { Link } from "react-router-dom";
-
+import IPost from "../interfaces/Post";
+import UserInfo from "./UserInfo";
 import Bookmark from "./Bookmark";
+import Votes from "./Votes";
+import DraftJSContent from "./DraftJSContent";
 
 interface PostProps {
-  postData:
-    | {
-        id: number;
-        header: string;
-        author: { id: number; user: { username: string }; avatar: string };
-        content: string;
-        upvotes: number;
-        downvotes: number;
-        created_at: Date;
-        is_bookmarked: boolean;
-        bookmark_count: number;
-        comment_count: number;
-      }
-    | undefined;
+  postData?: IPost;
 }
 
 const Post = ({ postData }: PostProps) => {
@@ -28,36 +15,14 @@ const Post = ({ postData }: PostProps) => {
     <article className="post block">
       {postData ? (
         <>
-          <div className="post__user-info user-info">
-            <Link
-              className="user-info__profile"
-              to={`/profile/${postData.author.id}`}
-            >
-              <img
-                className="user-info__avatar"
-                src={postData.author.avatar || no_avatar}
-                alt="avatar"
-              />
-              <span className="user-info__username">
-                {postData.author.user.username}
-              </span>
-            </Link>
-            <span className="user-info__date">
-              {moment(postData.created_at)
-                .format("DD MMMM [at] hh:mm")
-                .toString()}
-            </span>
-          </div>
+          <UserInfo author={postData.author} created_at={postData.created_at} />
           <h2 className="post__heading">{postData.header}</h2>
-          <div className="post__article-part">
-            <p className="post__paragraph">{postData.content}</p>
-          </div>
-          <div className="post__article-data article-data">
-            <div className="article-data__item">
-              <span className="article-data__number positive">
-                rating: <span>{postData.upvotes - postData.downvotes}</span>
-              </span>
-            </div>
+          <DraftJSContent
+            className="post__article-part"
+            content={postData.content}
+          />
+          <div className="post__article-data article-data paddingless">
+            <Votes upvotes={postData.upvotes} downvotes={postData.downvotes} />
             <div className="article-data__item">
               <span className="article-data__number">
                 comments: <span>{postData.comment_count}</span>

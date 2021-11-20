@@ -5,15 +5,25 @@ import { Link } from "react-router-dom";
 interface PaginationProps {
   pagesCount: number;
   currentPage: number;
-  pageLink: string;
+  prevPage: number | null;
+  nextPage: number | null;
 }
 
-const Pagination = ({ pagesCount, currentPage, pageLink }: PaginationProps) => {
+const Pagination = ({
+  pagesCount,
+  currentPage,
+  prevPage,
+  nextPage,
+}: PaginationProps) => {
   return (
     <div className="pagination">
-      <Link className="pagination__link" to={`/${pageLink}/${1}`}>
-        Here
-      </Link>
+      {prevPage ? (
+        <Link className="pagination__link" to={`${prevPage}`}>
+          Here
+        </Link>
+      ) : (
+        <span className="pagination__link disabled">Here</span>
+      )}
       <ul className="pagination__list">
         {[...Array(pagesCount)].map((undefDontUse, i) => {
           if (i + 1 === currentPage) {
@@ -25,7 +35,7 @@ const Pagination = ({ pagesCount, currentPage, pageLink }: PaginationProps) => {
           } else {
             return (
               <li key={i} className={"pagination__item"}>
-                <Link className="pagination__link" to={`/${pageLink}/${i + 1}`}>
+                <Link className="pagination__link" to={`${i + 1}`}>
                   {i + 1}
                 </Link>
               </li>
@@ -33,9 +43,13 @@ const Pagination = ({ pagesCount, currentPage, pageLink }: PaginationProps) => {
           }
         })}
       </ul>
-      <Link className="pagination__link" to={`/${pageLink}/${3}`}>
-        There
-      </Link>
+      {nextPage ? (
+        <Link className="pagination__link" to={`${nextPage}`}>
+          There
+        </Link>
+      ) : (
+        <span className="pagination__link disabled">There</span>
+      )}
     </div>
   );
 };

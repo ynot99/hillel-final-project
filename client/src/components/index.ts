@@ -6,8 +6,10 @@ import Pagination from "./Pagination";
 import NotFound from "./NotFound";
 import Form from "./Form";
 import Post from "./Post";
-import Logout from "./Logout";
 import Navigation from "./Navigation";
+import CustomEditor from "./CustomEditor";
+import Posts from "./Posts";
+import UserProfile from "./UserProfile";
 
 export {
   Header,
@@ -18,6 +20,8 @@ export {
   NotFound,
   Form,
   Post,
-  Logout,
   Navigation,
+  CustomEditor,
+  Posts,
+  UserProfile,
 };

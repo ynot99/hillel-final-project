@@ -19,6 +19,18 @@ const Register = () => {
           required: true,
         },
         {
+          name: "first_name",
+          label: "First name",
+          type: "text",
+          required: false,
+        },
+        {
+          name: "last_name",
+          label: "Last name",
+          type: "text",
+          required: false,
+        },
+        {
           name: "password",
           label: "Password",
           type: "password",

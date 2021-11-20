@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
+import { promiseCopyPaste } from "../utils";
+
 interface FormProps {
   fetchurl: string;
   inputs?: Array<{
@@ -45,32 +47,24 @@ const Form = ({
       }
     }
 
-    fetch(fetchurl, {
-      method: "POST",
-      body: JSON.stringify({ ...formData }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          console.log(response.text());
-          throw new Error("Something went wrong");
-        }
-      })
-      .then((result) => {
+    promiseCopyPaste(
+      fetch(fetchurl, {
+        method: "POST",
+        body: JSON.stringify({ ...formData }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      (result: any) => {
         if (typeof resultFunc === "function") {
           resultFunc(result);
         }
         navigate(redirectTo);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+      }
+    );
   };
 
+  // TODO style and errors
   return (
     <form onSubmit={handleSubmit} className="auth-form">
       <h2 className="auth-form__heading">Sign Up</h2>
