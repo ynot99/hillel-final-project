@@ -100,6 +100,8 @@ class UserForProfileSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             "id",
+            "first_name",
+            "last_name",
             "username",
             "avatar",
             "post_count",

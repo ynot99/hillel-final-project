@@ -6,7 +6,7 @@ import { Route, Routes, useParams } from "react-router";
 
 import { AuthContext } from "../App";
 
-import { Feed } from ".";
+import { Posts } from ".";
 import ProfileMenu from "./ProfileMenu";
 import Users from "./Users";
 
@@ -46,6 +46,7 @@ const UserProfile = () => {
       (result: IUser) => {
         setFollowing(result.is_followed_by_authorized_user);
         setProfile(result);
+        console.log(result);
       }
     );
   }, [profileSlug]);
@@ -111,11 +112,11 @@ const UserProfile = () => {
           <Routes>
             <Route
               path="posts"
-              element={<Feed fetchURL={`user_profile/${profile.id}`} />}
+              element={<Posts fetchURL={`user_profile/${profile.id}`} />}
             >
               <Route
                 path=":pageNum"
-                element={<Feed fetchURL={`user_profile/${profile.id}`} />}
+                element={<Posts fetchURL={`user_profile/${profile.id}`} />}
               />
             </Route>
             <Route
@@ -129,11 +130,11 @@ const UserProfile = () => {
             </Route>
             <Route
               path="bookmarks"
-              element={<Feed fetchURL={`bookmark/${profile.id}`} />}
+              element={<Posts fetchURL={`bookmark/${profile.id}`} />}
             >
               <Route
                 path=":pageNum"
-                element={<Feed fetchURL={`bookmark/${profile.id}`} />}
+                element={<Posts fetchURL={`bookmark/${profile.id}`} />}
               />
             </Route>
             <Route

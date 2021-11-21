@@ -19,7 +19,7 @@ const Comments = ({ profileID }: { limit?: number; profileID: number }) => {
       <ul className="comments">
         {comments?.results.map((item) => {
           return (
-            <li className="comments__item block" key={item.id}>
+            <li className="comments__item" key={item.id}>
               <Comment commentData={item} />
             </li>
           );

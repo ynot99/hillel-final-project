@@ -9,7 +9,7 @@ import IComment from "../interfaces/Comment";
 
 const Comment = ({ commentData }: { commentData: IComment }) => {
   return (
-    <div className="comment">
+    <div className="comment block">
       {commentData.post ? (
         <>
           <Link className="comment__link" to={`/post/${commentData.post.id}`}>
@@ -28,9 +28,9 @@ const Comment = ({ commentData }: { commentData: IComment }) => {
           upvotes={commentData.upvotes}
         />
         {commentData.post ? (
-          <button className="comment-section__reply link">Reply</button>
+          <button className="comment-section__reply link">Look</button>
         ) : (
-          ""
+          <button className="comment-section__reply link">Reply</button>
         )}
       </div>
     </div>

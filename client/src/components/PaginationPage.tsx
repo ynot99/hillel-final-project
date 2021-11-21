@@ -43,7 +43,6 @@ const PaginationPage = ({
 
   if (responseData) {
     pagesCount = Math.ceil(responseData.count / limit);
-    console.log(responseData.results);
 
     // childrenWithProps = React.Children.map(children, (child, index) => {
     //   // Checking isValidElement is the safe way and avoids a typescript

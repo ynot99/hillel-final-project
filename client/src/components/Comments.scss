@@ -1,6 +1,8 @@
 .comments {
   &__item {
-    background-color: #ffffff;
-    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+  &__item:last-child {
+    margin-bottom: 0;
   }
 }
