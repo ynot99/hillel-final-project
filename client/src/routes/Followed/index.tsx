@@ -1,7 +1,7 @@
-import { Posts } from "../../components";
+import { Feed } from "../../components";
 
 const Followed = () => {
-  return <Posts fetchURL="user_follow" />;
+  return <Feed fetchURL="user_follow" />;
 };
 
 export default Followed;

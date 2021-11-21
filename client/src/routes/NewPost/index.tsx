@@ -31,7 +31,7 @@ const NewPost = () => {
   return (
     <>
       <CustomEditor content={content} setContent={setContent} />
-      <button className="btn4" onClick={handleSubmit} disabled>
+      <button className="btn4" onClick={handleSubmit}>
         Post
       </button>
     </>

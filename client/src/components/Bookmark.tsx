@@ -58,14 +58,14 @@ const Bookmark = ({ id, isActive, count }: BookmarkProps) => {
 
     bookmarkDispatch({ type: "loading" });
 
-    let url = "create";
+    let method = "POST";
     if (bookmarkState["isActive"]) {
-      url = "delete";
+      method = "DELETE";
     }
 
     promiseCopyPaste(
-      fetch(`/api/v1/blog/post/bookmark/${url}`, {
-        method: url === "create" ? "POST" : "DELETE",
+      fetch(`/api/v1/blog/bookmark/`, {
+        method: method,
         headers: new Headers({
           "Content-Type": "application/json",
           ...getAuthTokenHeaders(),

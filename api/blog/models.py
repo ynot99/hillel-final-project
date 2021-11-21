@@ -1,23 +1,15 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 
-
-class UserProfile(models.Model):
-    user = models.OneToOneField(to=User, on_delete=models.CASCADE)
-    avatar = models.ImageField(null=True, blank=True)
-    slug = models.SlugField(unique=True)
-
-    def __str__(self) -> str:
-        return self.user.username
+from api.settings import AUTH_USER_MODEL
 
 
 class UserFollow(models.Model):
     user = models.ForeignKey(
-        UserProfile, on_delete=models.CASCADE, related_name="follow_user"
+        AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="follow_user"
     )
     follower = models.ForeignKey(
-        UserProfile, on_delete=models.CASCADE, related_name="follower"
+        AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="follower"
     )
 
     class Meta:
@@ -27,7 +19,7 @@ class UserFollow(models.Model):
 class Post(models.Model):
     header = models.CharField(max_length=255)
     author = models.ForeignKey(
-        to=UserProfile, null=True, blank=True, on_delete=models.SET_NULL
+        to=AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL
     )
     content = models.TextField()
     upvotes = models.IntegerField(default=0, validators=[MinValueValidator(0)])
@@ -44,7 +36,7 @@ class Post(models.Model):
 class Comment(models.Model):
     post = models.ForeignKey(to=Post, on_delete=models.CASCADE)
     user = models.ForeignKey(
-        to=UserProfile, null=True, blank=True, on_delete=models.SET_NULL
+        to=AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL
     )
     content = models.TextField()
     reply_to = models.ForeignKey(
@@ -62,7 +54,7 @@ class Comment(models.Model):
 
 
 class BookmarkBase(models.Model):
-    user = models.ForeignKey(to=UserProfile, on_delete=models.CASCADE)
+    user = models.ForeignKey(to=AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True

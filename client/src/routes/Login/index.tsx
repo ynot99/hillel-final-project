@@ -39,7 +39,7 @@ const Login = () => {
             slug: result.slug,
             username: result.username,
             firstName: result.first_name,
-            lastName: result["last_name"],
+            lastName: result.last_name,
             avatar: result.avatar,
           },
         });

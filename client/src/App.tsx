@@ -16,15 +16,9 @@ import {
   EditPost,
 } from "./routes";
 import { Footer, Header, NotFound, Navigation } from "./components";
+import { promiseCopyPaste } from "./utils";
 
-interface IUser {
-  id: number;
-  slug: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  avatar?: string;
-}
+import IUser from "./interfaces/User";
 
 export const AuthContext = React.createContext<{
   user?: IUser;
@@ -36,7 +30,7 @@ export const AuthContext = React.createContext<{
 }>({ user: undefined, setUser: () => {} });
 
 const App = () => {
-  const [user, setUser] = useState<{
+  const [userState, setUserState] = useState<{
     user?: IUser;
   }>({ user: undefined });
 
@@ -44,48 +38,37 @@ const App = () => {
     // TODO Warning: Cannot update a component (`App`) while rendering a different component (`Logout`). To locate the bad setState() call inside `Logout`
     const token = localStorage.getItem("auth-token");
     if (!token) return;
-    fetch("/api/v1/blog/user_profile", {
-      method: "GET",
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          localStorage.removeItem("auth-token");
-          console.log(response.text());
-
-          throw new Error("Something went wrong");
-        }
-      })
-      .then(
-        (result: {
-          id: number;
-          slug: string;
-          avatar?: string;
-          user: { username: string; first_name: string; last_name: string };
-        }) => {
-          setUser({
-            user: {
-              id: result.id,
-              slug: result.slug,
-              avatar: result.avatar,
-              firstName: result.user.first_name,
-              lastName: result.user.last_name,
-              username: result.user.username,
-            },
-          });
-        }
-      )
-      .catch((err) => {
-        console.error(err);
-      });
+    promiseCopyPaste(
+      fetch("/api/v1/blog/user_profile", {
+        method: "GET",
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      }),
+      (result: {
+        id: number;
+        slug: string;
+        avatar?: string;
+        username: string;
+        first_name: string;
+        last_name: string;
+      }) => {
+        setUserState({
+          user: {
+            id: result.id,
+            slug: result.slug,
+            avatar: result.avatar,
+            firstName: result.first_name,
+            lastName: result.last_name,
+            username: result.username,
+          },
+        });
+      }
+    );
   }, []);
 
   return (
-    <AuthContext.Provider value={{ ...user, setUser }}>
+    <AuthContext.Provider value={{ ...userState, setUser: setUserState }}>
       <BrowserRouter>
         <Header />
         <main className="main">
@@ -100,16 +83,16 @@ const App = () => {
                 <Route path="/profile/:profileSlug/*" element={<Profile />}>
                   <Route path=":tabName" element={<Profile />} />
                 </Route>
-                {user.user ? (
+                {userState.user ? (
                   <>
                     <Route path="/post/:postNum/edit" element={<EditPost />} />
                     <Route path="/logout" element={<Logout />} />
                     <Route path="/post/new" element={<NewPost />} />
                     <Route path="/following" element={<Following />}>
-                      <Route path=":pageNum" />
+                      <Route path=":pageNum" element={<Following />} />
                     </Route>
                     <Route path="/bookmarked" element={<Bookmarked />}>
-                      <Route path=":pageNum" />
+                      <Route path=":pageNum" element={<Bookmarked />} />
                     </Route>
                   </>
                 ) : (

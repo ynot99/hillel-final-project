@@ -2,7 +2,8 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.request import Request
 
-from .models import Post, UserFollow, UserProfile, BookmarkPost, Comment
+from authapp.models import User
+from .models import Post, UserFollow, BookmarkPost, Comment
 
 
 # region Bookmark
@@ -17,14 +18,17 @@ class BookmarkCreateSerializer(serializers.ModelSerializer):
 
 # endregion Bookmark
 
+
 # region User
-class UserForUserProfileSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
+            "id",
             "username",
             "first_name",
             "last_name",
+            "avatar",
         ]
 
 
@@ -32,40 +36,27 @@ class UserForPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
+            "id",
             "username",
-        ]
-
-
-# endregion User
-
-# region UserProfile
-class UserProfileSerializer(serializers.ModelSerializer):
-    user = UserForUserProfileSerializer()
-
-    class Meta:
-        model = UserProfile
-        fields = [
-            "id",
-            "user",
-            "avatar",
-        ]
-
-
-class UserProfileForPostSerializer(serializers.ModelSerializer):
-    user = UserForPostSerializer()
-
-    class Meta:
-        model = UserProfile
-        fields = [
-            "id",
-            "user",
             "avatar",
             "slug",
         ]
 
 
-class UserProfileForProfileSerializer(serializers.ModelSerializer):
-    user = UserForPostSerializer()
+class UserForUserFollowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "slug",
+            "username",
+            "first_name",
+            "last_name",
+            "avatar",
+        ]
+
+
+class UserForProfileSerializer(serializers.ModelSerializer):
     post_count = serializers.SerializerMethodField("get_post_count")
     comment_count = serializers.SerializerMethodField("get_comment_count")
     bookmark_count = serializers.SerializerMethodField("get_bookmark_count")
@@ -97,7 +88,7 @@ class UserProfileForProfileSerializer(serializers.ModelSerializer):
 
         try:
             UserFollow.objects.get(
-                user=UserProfile.objects.get(user=request.user),
+                user=request.user,
                 follower=profile,
             )
         except UserFollow.DoesNotExist:
@@ -106,10 +97,10 @@ class UserProfileForProfileSerializer(serializers.ModelSerializer):
         return True
 
     class Meta:
-        model = UserProfile
+        model = User
         fields = [
             "id",
-            "user",
+            "username",
             "avatar",
             "post_count",
             "comment_count",
@@ -120,32 +111,11 @@ class UserProfileForProfileSerializer(serializers.ModelSerializer):
         ]
 
 
-class UserProfileAuthSerializer(serializers.ModelSerializer):
-    user = UserForUserProfileSerializer()
-
-    class Meta:
-        model = UserProfile
-        fields = [
-            "id",
-            "slug",
-            "user",
-            "avatar",
-        ]
-
-
-class UserProfileRegisterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserProfile
-        fields = [
-            "user",
-        ]
-
-
-# endregion UserProfile
+# endregion User
 
 # region Post
 class PostSerializer(serializers.ModelSerializer):
-    author = UserProfileForPostSerializer()
+    author = UserForPostSerializer()
     bookmark_count = serializers.SerializerMethodField("get_bookmark_count")
     comment_count = serializers.SerializerMethodField("get_comment_count")
     is_bookmarked = serializers.SerializerMethodField("get_is_bookmarked")
@@ -162,9 +132,7 @@ class PostSerializer(serializers.ModelSerializer):
             return False
 
         try:
-            BookmarkPost.objects.get(
-                user=UserProfile.objects.get(user=request.user), post=post
-            )
+            BookmarkPost.objects.get(user__pk=request.user.id, post=post)
         except BookmarkPost.DoesNotExist:
             return False
 
@@ -209,7 +177,7 @@ class PostHeaderSerializer(serializers.ModelSerializer):
 
 # region Comment
 class CommentSerializer(serializers.ModelSerializer):
-    user = UserProfileForPostSerializer()
+    user = UserForPostSerializer()
 
     class Meta:
         model = Comment
@@ -225,7 +193,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CommentForUserProfileSerializer(serializers.ModelSerializer):
-    user = UserProfileForPostSerializer()
+    user = UserForPostSerializer()
     post = PostHeaderSerializer()
 
     class Meta:
@@ -255,22 +223,22 @@ class CommentCreateSerializer(serializers.ModelSerializer):
 # endregion Comment
 
 # region UserFollow
-class UserFollowingSerializer(serializers.ModelSerializer):
+class UserFollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserFollow
         fields = ["user", "follower"]
 
 
-class UserFollowingByUserSerializer(serializers.ModelSerializer):
-    user = UserProfileAuthSerializer(source="follower")
+class UserFollowByUserSerializer(serializers.ModelSerializer):
+    user = UserForUserFollowSerializer(source="follower")
 
     class Meta:
         model = UserFollow
         fields = ["user"]
 
 
-class UserFollowingByFollowerSerializer(serializers.ModelSerializer):
-    user = UserProfileAuthSerializer()
+class UserFollowByFollowerSerializer(serializers.ModelSerializer):
+    user = UserForUserFollowSerializer()
 
     class Meta:
         model = UserFollow

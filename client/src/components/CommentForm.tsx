@@ -13,7 +13,7 @@ const CommentForm = ({ postID }: { postID: number }) => {
     const raw = convertToRaw(comment.getCurrentContent());
 
     promiseCopyPaste(
-      fetch("/api/v1/blog/post/comment/create", {
+      fetch("/api/v1/blog/comment/", {
         method: "POST",
         body: JSON.stringify({
           post: postID,

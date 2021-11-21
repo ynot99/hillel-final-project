@@ -3,7 +3,7 @@ import { Form } from "../../components";
 const Register = () => {
   return (
     <Form
-      fetchurl="api/v1/blog/register"
+      fetchurl="api/v1/authapp/register"
       redirectTo="/login"
       inputs={[
         {

@@ -12,7 +12,7 @@ const EditPost = () => {
 
   useEffect(() => {
     promiseCopyPaste(
-      fetch(`/api/v1/blog/post/${postNum}/edit`, {
+      fetch(`/api/v1/blog/post/auth/${postNum}`, {
         method: "GET",
 
         headers: new Headers({
@@ -28,13 +28,13 @@ const EditPost = () => {
         );
       }
     );
-  }, []);
+  }, [postNum]);
 
   const handleSubmit = () => {
     const raw = convertToRaw(content.getCurrentContent());
 
     promiseCopyPaste(
-      fetch(`/api/v1/blog/post/${postNum}/edit`, {
+      fetch(`/api/v1/blog/post/auth/${postNum}`, {
         method: "PUT",
         body: JSON.stringify({
           header: "test header",

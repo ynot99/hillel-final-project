@@ -1,9 +1,9 @@
-import IAuthor from "./Author";
+import IUser from "./User";
 
 export default interface IPost {
   id: number;
   header: string;
-  author?: IAuthor;
+  author?: IUser;
   content: string;
   upvotes: number;
   downvotes: number;

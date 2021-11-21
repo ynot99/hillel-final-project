@@ -1,65 +1,31 @@
-import "./Feed.scss";
-import "./Post.scss";
+import { useState } from "react";
 
-import { useContext } from "react";
-import { Link } from "react-router-dom";
-
-import Bookmark from "./Bookmark";
+import { Posts, FeedFilter } from "./";
 
 import IPost from "../interfaces/Post";
-import UserInfo from "./UserInfo";
-import Votes from "./Votes";
-import DraftJSContent from "./DraftJSContent";
-import { AuthContext } from "../App";
+import PaginationPage from "./PaginationPage";
 
-interface FeedProps {
-  articleList: Array<IPost>;
+interface IFetchPosts {
+  count: number;
+  next: string;
+  previous: string;
+  results: Array<IPost>;
 }
 
-const Feed = ({ articleList }: FeedProps) => {
-  const authContext = useContext(AuthContext);
+const Feed = ({ fetchURL = "" }) => {
+  const [articles, setArticles] = useState<IFetchPosts>();
+
   return (
-    <ul className="feed-list">
-      {articleList.map((item) => {
-        return (
-          <li
-            key={item.id}
-            className="feed-list__item block block-focus"
-            tabIndex={0}
-          >
-            <article className="feed-list__post post">
-              {authContext.user && authContext.user.id === item.author?.id && (
-                <Link to={`/post/${item.id}/edit`}>edit</Link>
-              )}
-              <UserInfo author={item.author} created_at={item.created_at} />
-              <Link className="post__heading-link" to={`/post/${item.id}`}>
-                <h2 className="post__heading">{item.header}</h2>
-              </Link>
-              <DraftJSContent
-                className="post__article-part"
-                content={item.content}
-              />
-              <Link className="post__read-more btn" to={`/post/${item.id}`}>
-                Read more
-              </Link>
-              <div className="post__article-data article-data">
-                <Votes upvotes={item.upvotes} downvotes={item.downvotes} />
-                <div className="article-data__item">
-                  <span className="article-data__number">
-                    comments: <span>{item.comment_count}</span>
-                  </span>
-                </div>
-                <Bookmark
-                  id={item.id}
-                  isActive={item.is_bookmarked}
-                  count={item.bookmark_count}
-                />
-              </div>
-            </article>
-          </li>
-        );
-      })}
-    </ul>
+    <>
+      <FeedFilter />
+      <PaginationPage
+        responseData={articles}
+        setResponseData={setArticles}
+        fetchURL={`/api/v1/blog/post/${fetchURL}`}
+      >
+        {articles?.count ? <Posts articleList={articles.results} /> : "no data"}
+      </PaginationPage>
+    </>
   );
 };
 

@@ -5,7 +5,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
-from .models import UserProfile
+from .models import User
 
 
 class CustomAuthToken(ObtainAuthToken):
@@ -15,19 +15,15 @@ class CustomAuthToken(ObtainAuthToken):
         )
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data["user"]
-        try:
-            userProfile = UserProfile.objects.get(user__pk=user.pk)
-        except UserProfile.DoesNotExist:
-            return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
         token, created = Token.objects.get_or_create(user=user)
         try:
-            avatar_url = userProfile.avatar.url
+            avatar_url = user.avatar.url
         except:
             avatar_url = None
         return Response(
             {
-                "id": userProfile.id,
-                "slug": userProfile.slug,
+                "id": user.id,
+                "slug": user.slug,
                 "token": token.key,
                 "username": user.username,
                 "first_name": user.first_name,

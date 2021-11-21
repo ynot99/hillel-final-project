@@ -1,7 +1,7 @@
-import { Posts } from "../../components";
+import { Feed } from "../../components";
 
 const Main = () => {
-  return <Posts />;
+  return <Feed />;
 };
 
 export default Main;

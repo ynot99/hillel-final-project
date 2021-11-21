@@ -1,73 +1,42 @@
 from django.contrib.auth.models import User
-from django.utils.text import slugify
+from rest_framework import exceptions, mixins
 from rest_framework.serializers import Serializer
-from rest_framework.status import (
-    HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT,
-    HTTP_400_BAD_REQUEST,
-    HTTP_404_NOT_FOUND,
-)
-from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    ListAPIView,
-    RetrieveAPIView,
-    RetrieveUpdateAPIView,
-    RetrieveUpdateDestroyAPIView,
-)
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
 
-from .models import BookmarkPost, Comment, Post, UserFollow, UserProfile
+from authapp.models import User
+from .models import BookmarkPost, Comment, Post, UserFollow
 from .serializers import (
     CommentForUserProfileSerializer,
-    UserFollowingByFollowerSerializer,
-    UserFollowingByUserSerializer,
-    UserProfileAuthSerializer,
+    UserFollowByFollowerSerializer,
+    UserFollowByUserSerializer,
+    UserForUserFollowSerializer,
     BookmarkCreateSerializer,
     CommentCreateSerializer,
     CommentSerializer,
     PostCreateSerializer,
     PostSerializer,
-    UserFollowingSerializer,
-    UserProfileForProfileSerializer,
-    UserProfileRegisterSerializer,
+    UserFollowSerializer,
+    UserForProfileSerializer,
 )
 
 
-class PostsView(ListAPIView):
-    authentication_classes = [TokenAuthentication]
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-
-
-class PostsByUserProfileView(ListAPIView):
-    authentication_classes = [TokenAuthentication]
-    serializer_class = PostSerializer
-
-    def get_queryset(self):
-        return Post.objects.filter(author=self.kwargs["pk"])
-
-
-class PostsUserFollowingView(ListAPIView):
+class PostsUserFollowView(generics.ListAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = PostSerializer
 
     def get_queryset(self):
-        try:
-            user = UserProfile.objects.get(user__pk=self.request.user.id)
-        except UserProfile.DoesNotExist:
-            return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
         return Post.objects.filter(
             author__pk__in=UserFollow.objects.filter(
-                user__pk=user.id
+                user__pk=self.request.user.id
             ).values_list("follower")
         )
 
 
-class PostsBookmarkedView(ListAPIView):
+class PostsBookmarkView(generics.ListAPIView):
     authentication_classes = [TokenAuthentication]
     serializer_class = PostSerializer
     queryset = Post.objects.all()
@@ -80,24 +49,20 @@ class PostsBookmarkedView(ListAPIView):
         )
 
 
-class PostsBookmarkedAuthorizedView(ListAPIView):
+class PostsBookmarkAuthorizedView(generics.ListAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = PostSerializer
 
     def get_queryset(self):
-        try:
-            user = UserProfile.objects.get(user__pk=self.request.user.id)
-        except UserProfile.DoesNotExist:
-            return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
         return Post.objects.filter(
-            pk__in=BookmarkPost.objects.filter(user__pk=user.id).values_list(
-                "post"
-            )
+            pk__in=BookmarkPost.objects.filter(
+                user__pk=self.request.user.id
+            ).values_list("post")
         )
 
 
-class PostView(RetrieveAPIView):
+class PostView(generics.RetrieveAPIView):
     authentication_classes = [TokenAuthentication]
     queryset = Post.objects.all()
     serializer_class = PostSerializer
@@ -114,200 +79,176 @@ class PostView(RetrieveAPIView):
         )
 
 
-class PostAuthorizedView(RetrieveUpdateDestroyAPIView):
+class PostAuthorizedView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = PostCreateSerializer
 
     def get_queryset(self):
-        try:
-            user = UserProfile.objects.get(user__pk=self.request.user.id)
-        except UserProfile.DoesNotExist:
-            return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
-
-        return Post.objects.filter(author__pk=user.id)
+        return Post.objects.filter(author__pk=self.request.user.id)
 
 
-class PostCreateView(CreateAPIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-    serializer_class = PostCreateSerializer
-
-    def post(self, request):
-        try:
-            user = UserProfile.objects.get(user__pk=request.user.id)
-        except UserProfile.DoesNotExist:
-            return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
-        request.data["author"] = user.id
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(
-            serializer.data, status=HTTP_201_CREATED, headers=headers
-        )
-
-
-class BookmarkAddView(CreateAPIView):
+class BookmarkView(
+    mixins.CreateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView
+):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = BookmarkCreateSerializer
 
-    def create(self, request):
-        try:
-            user = UserProfile.objects.get(user__pk=request.user.id)
-        except UserProfile.DoesNotExist:
-            return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
+    def post(self, request):
         serializer: Serializer = self.get_serializer(
-            data={"user": user.id, "post": request.data["post"]}
+            data={"user": request.user.id, "post": request.data["post"]}
         )
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(
-            serializer.data, status=HTTP_201_CREATED, headers=headers
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
         )
-
-
-class BookmarkRemoveView(DestroyAPIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
 
     def delete(self, request, *args, **kwargs):
         try:
-            user = UserProfile.objects.get(user=request.user.id)
-        except UserProfile.DoesNotExist:
-            return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
-        try:
             instance = BookmarkPost.objects.get(
-                user=user, post__pk=request.data["post"]
+                user=request.user.id, post__pk=request.data["post"]
             )
         except BookmarkPost.DoesNotExist:
-            return Response("Bookmark doesn't exist", status=HTTP_404_NOT_FOUND)
+            return Response(
+                "Bookmark doesn't exist", status=status.HTTP_404_NOT_FOUND
+            )
         self.perform_destroy(instance)
-        return Response(status=HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class UserProfileAuthView(RetrieveAPIView):
+# TODO TOTALLY NOT OK!
+class UserFollowView(
+    mixins.CreateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView
+):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    queryset = UserProfile.objects.all()
-    serializer_class = UserProfileAuthSerializer
+    serializer_class = UserFollowSerializer
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
+        # try:
+        #     user = User.objects.get(user__pk=request.user.id)
+        # except User.DoesNotExist:
+        #     return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
+        request.data["user"] = request.user.id
+        return super().create(request, *args, **kwargs)
+
+    def get_object(self):
+        # try:
+        #     user = User.objects.get(user__pk=self.request.user.id)
+        # except User.DoesNotExist:
+        #     raise exceptions.bad_request(
+        #         self.request, exception=exceptions.NotFound
+        #     )
+        #     # return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
         try:
-            instance = UserProfile.objects.get(user__pk=request.user.pk)
-        except UserProfile.DoesNotExist:
-            return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+            instance = UserFollow.objects.get(
+                user__pk=self.request.user.id,
+                follower=self.request.data["follower"],
+            )
+        except UserFollow.DoesNotExist:
+            raise exceptions.bad_request(
+                self.request, exception=exceptions.NotFound
+            )
+            # return Response(
+            #     "User is not following", status=HTTP_400_BAD_REQUEST
+            # )
+
+        return instance
+
+    def delete(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
+    # def delete(self, request, *args, **kwargs):
+    #     try:
+    #         user = UserProfile.objects.get(user__pk=request.user.id)
+    #     except UserProfile.DoesNotExist:
+    #         return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
+    #     try:
+    #         instance = UserFollow.objects.get(
+    #             user=user, follower=request.data["follower"]
+    #         )
+    #     except UserFollow.DoesNotExist:
+    #         return Response(
+    #             "User is not following", status=HTTP_400_BAD_REQUEST
+    #         )
+
+    #     self.perform_destroy(instance)
+    #     return Response(status=HTTP_204_NO_CONTENT)
 
 
-class UserProfileView(RetrieveAPIView):
-    queryset = UserProfile.objects.all()
-    serializer_class = UserProfileForProfileSerializer
+# TODO OK
+
+
+class PostsView(generics.ListAPIView):
+    authentication_classes = [TokenAuthentication]
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+
+class PostsByUserProfileView(generics.ListAPIView):
+    authentication_classes = [TokenAuthentication]
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        return Post.objects.filter(author=self.kwargs["pk"])
+
+
+class UserProfileAuthenticatedView(generics.RetrieveAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserForUserFollowSerializer
+
+    def get_object(self):
+        return User.objects.get(pk=self.request.user.id)
+
+
+class CommentView(
+    mixins.DestroyModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
+):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = CommentCreateSerializer
+
+    def post(self, request, *args, **kwargs):
+        request.data["user"] = request.user.id
+        return super().create(request, *args, **kwargs)
+
+
+class PostCreateView(generics.CreateAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = PostCreateSerializer
+
+    def post(self, request, *args, **kwargs):
+        request.data["author"] = request.user.id
+        return super().post(request, *args, **kwargs)
+
+
+class UserProfileView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserForProfileSerializer
     lookup_field = "slug"
 
 
-class UserFollowingByUserView(ListAPIView):
-    serializer_class = UserFollowingByUserSerializer
+class UserFollowByUserView(generics.ListAPIView):
+    serializer_class = UserFollowByUserSerializer
 
     def get_queryset(self):
         return UserFollow.objects.filter(user__pk=self.kwargs["pk"])
 
 
-class UserFollowingByFollowerView(ListAPIView):
-    serializer_class = UserFollowingByFollowerSerializer
+class UserFollowByFollowerView(generics.ListAPIView):
+    serializer_class = UserFollowByFollowerSerializer
 
     def get_queryset(self):
         return UserFollow.objects.filter(follower__pk=self.kwargs["pk"])
 
 
-class UserFollowingCreateView(CreateAPIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-    serializer_class = UserFollowingSerializer
-
-    def create(self, request, *args, **kwargs):
-        try:
-            user = UserProfile.objects.get(user__pk=request.user.id)
-        except UserProfile.DoesNotExist:
-            return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
-        request.data["user"] = user.id
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(
-            serializer.data, status=HTTP_201_CREATED, headers=headers
-        )
-
-
-class UserFollowingDeleteView(DestroyAPIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-    serializer_class = UserFollowingSerializer
-
-    def delete(self, request, *args, **kwargs):
-        try:
-            user = UserProfile.objects.get(user__pk=request.user.id)
-        except UserProfile.DoesNotExist:
-            return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
-        try:
-            instance = UserFollow.objects.get(
-                user=user, follower=request.data["follower"]
-            )
-        except UserFollow.DoesNotExist:
-            return Response(
-                "User is not following", status=HTTP_400_BAD_REQUEST
-            )
-
-        self.perform_destroy(instance)
-        return Response(status=HTTP_204_NO_CONTENT)
-
-
-class CommentByUserProfileView(ListAPIView):
+class CommentUserProfileView(generics.ListAPIView):
     serializer_class = CommentForUserProfileSerializer
 
     def get_queryset(self):
         return Comment.objects.filter(user__pk=self.kwargs["pk"])
-
-
-class CommentCreateView(CreateAPIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-    serializer_class = CommentCreateSerializer
-
-    def create(self, request, *args, **kwargs):
-        try:
-            user = UserProfile.objects.get(user__pk=request.user.id)
-        except UserProfile.DoesNotExist:
-            return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
-        request.data["user"] = user.id
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(
-            serializer.data, status=HTTP_201_CREATED, headers=headers
-        )
-
-
-class RegisterView(CreateAPIView):
-    serializer_class = UserProfileRegisterSerializer
-
-    def create(self, request):
-        try:
-            user = User.objects.create_user(
-                username=request.data["username"],
-                email=request.data["email"],
-                password=request.data["password"],
-                first_name=request.data["first_name"],
-                last_name=request.data["last_name"],
-            )
-
-            UserProfile.objects.create(user=user, slug=slugify(user.username))
-        except:
-            return Response(data={}, status=HTTP_400_BAD_REQUEST)
-
-        return Response(data={})

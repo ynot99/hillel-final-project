@@ -3,23 +3,4 @@
     background-color: #ffffff;
     margin-top: 8px;
   }
-  &__link &__heading {
-    color: #333;
-    font-size: 1.0625rem;
-    line-height: 1.5rem;
-    font-weight: 500;
-    transition: color 0.3s ease;
-  }
-  &__link:hover &__heading {
-    color: #487284;
-  }
-  &__hr {
-    border: 0;
-    border-bottom: 1px solid #dfe8ea;
-    margin: 12px 0 14px;
-  }
-
-  &__info {
-    margin-top: 12px;
-  }
 }

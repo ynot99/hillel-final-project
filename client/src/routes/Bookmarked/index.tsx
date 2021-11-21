@@ -1,7 +1,7 @@
-import { Posts } from "../../components";
+import { Feed } from "../../components";
 
 const Bookmarked = () => {
-  return <Posts fetchURL="bookmark" />;
+  return <Feed fetchURL="bookmark" />;
 };
 
 export default Bookmarked;

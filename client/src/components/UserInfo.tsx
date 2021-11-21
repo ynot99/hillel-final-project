@@ -5,13 +5,13 @@ import moment from "moment";
 
 import { Link } from "react-router-dom";
 
-import IAuthor from "../interfaces/Author";
+import IUser from "../interfaces/User";
 
 const UserInfo = ({
   author,
   created_at,
 }: {
-  author?: IAuthor;
+  author?: IUser;
   created_at: Date;
 }) => {
   return (
@@ -23,7 +23,7 @@ const UserInfo = ({
             src={author.avatar || no_avatar}
             alt="avatar"
           />
-          <span className="user-info__username">{author.user.username}</span>
+          <span className="user-info__username">{author.username}</span>
         </Link>
       ) : (
         <span className="user-info__profile">deleted</span>

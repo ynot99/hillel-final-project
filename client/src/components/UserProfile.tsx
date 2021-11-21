@@ -6,21 +6,19 @@ import { Route, Routes, useParams } from "react-router";
 
 import { AuthContext } from "../App";
 
-import { Posts } from ".";
+import { Feed } from ".";
 import ProfileMenu from "./ProfileMenu";
 import Users from "./Users";
 
 import { promiseCopyPaste, getAuthTokenHeaders } from "../utils";
 import Comments from "./Comments";
 
-interface IUserProfile {
+interface IUser {
   id: number;
   avatar?: string;
-  user: {
-    username: string;
-    first_name: string;
-    last_name: string;
-  };
+  username: string;
+  first_name: string;
+  last_name: string;
   post_count: number;
   comment_count: number;
   bookmark_count: number;
@@ -33,7 +31,7 @@ const UserProfile = () => {
   const authContext = useContext(AuthContext);
   const profileSlug = useParams()["profileSlug"];
 
-  const [profile, setProfile] = useState<IUserProfile>();
+  const [profile, setProfile] = useState<IUser>();
   const [following, setFollowing] = useState(false);
 
   useEffect(() => {
@@ -45,7 +43,7 @@ const UserProfile = () => {
           ...getAuthTokenHeaders(),
         }),
       }),
-      (result: IUserProfile) => {
+      (result: IUser) => {
         setFollowing(result.is_followed_by_authorized_user);
         setProfile(result);
       }
@@ -53,13 +51,13 @@ const UserProfile = () => {
   }, [profileSlug]);
 
   const handleFollow = (followingUserID: number, unfollow?: boolean) => {
-    let createOrDelete = "create";
+    let method = "POST";
     if (unfollow) {
-      createOrDelete = "delete";
+      method = "DELETE";
     }
     promiseCopyPaste(
-      fetch(`/api/v1/blog/user_follow/${createOrDelete}`, {
-        method: createOrDelete === "create" ? "POST" : "DELETE",
+      fetch(`/api/v1/blog/user_follow/`, {
+        method: method,
         headers: new Headers({
           "Content-Type": "application/json",
           ...getAuthTokenHeaders(),
@@ -98,11 +96,9 @@ const UserProfile = () => {
             </div>
             <div className="profile__bottom">
               <span className="profile__fullname">
-                {profile.user.first_name} {profile.user.last_name}
+                {profile.first_name} {profile.last_name}
               </span>
-              <span className="profile__username">
-                @{profile.user.username}
-              </span>
+              <span className="profile__username">@{profile.username}</span>
             </div>
           </div>
           <ProfileMenu
@@ -115,23 +111,29 @@ const UserProfile = () => {
           <Routes>
             <Route
               path="posts"
-              element={<Posts fetchURL={`user_profile/${profile.id}`} />}
+              element={<Feed fetchURL={`user_profile/${profile.id}`} />}
             >
               <Route
                 path=":pageNum"
-                element={<Posts fetchURL={`user_profile/${profile.id}`} />}
+                element={<Feed fetchURL={`user_profile/${profile.id}`} />}
               />
             </Route>
-            <Route path="comments" element={<Comments />}>
-              <Route path=":pageNum" element={<Comments />} />
+            <Route
+              path="comments"
+              element={<Comments profileID={profile.id} />}
+            >
+              <Route
+                path=":pageNum"
+                element={<Comments profileID={profile.id} />}
+              />
             </Route>
             <Route
               path="bookmarks"
-              element={<Posts fetchURL={`bookmark/${profile.id}`} />}
+              element={<Feed fetchURL={`bookmark/${profile.id}`} />}
             >
               <Route
                 path=":pageNum"
-                element={<Posts fetchURL={`bookmark/${profile.id}`} />}
+                element={<Feed fetchURL={`bookmark/${profile.id}`} />}
               />
             </Route>
             <Route
