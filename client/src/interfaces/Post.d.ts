@@ -3,7 +3,7 @@ import IAuthor from "./Author";
 export default interface IPost {
   id: number;
   header: string;
-  author?: author;
+  author?: IAuthor;
   content: string;
   upvotes: number;
   downvotes: number;

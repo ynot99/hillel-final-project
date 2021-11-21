@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     CommentByUserProfileView,
+    PostAuthorizedView,
     PostsByUserProfileView,
     UserFollowingByFollowerView,
     UserFollowingByUserView,
@@ -26,6 +27,13 @@ app_name = "blog"
 
 urlpatterns = [
     path("post/", PostsView.as_view(), name="posts"),
+    path("post/<int:pk>", PostView.as_view(), name="post"),
+    path(
+        "post/<int:pk>/edit",
+        PostAuthorizedView.as_view(),
+        name="post_authorized",
+    ),
+    path("post/create", PostCreateView.as_view(), name="post_create"),
     path(
         "post/user_profile/<int:pk>/",
         PostsByUserProfileView.as_view(),
@@ -46,8 +54,6 @@ urlpatterns = [
         PostsBookmarkedView.as_view(),
         name="posts_bookmark",
     ),
-    path("post/<int:pk>", PostView.as_view(), name="post"),
-    path("post/create", PostCreateView.as_view(), name="post_create"),
     path(
         "post/bookmark/create",
         BookmarkAddView.as_view(),

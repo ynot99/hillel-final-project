@@ -5,13 +5,13 @@ import moment from "moment";
 
 import { Link } from "react-router-dom";
 
-import Author from "../interfaces/Author";
+import IAuthor from "../interfaces/Author";
 
 const UserInfo = ({
   author,
   created_at,
 }: {
-  author: Author;
+  author?: IAuthor;
   created_at: Date;
 }) => {
   return (

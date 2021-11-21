@@ -13,6 +13,7 @@ import {
   NewPost,
   Followed as Following,
   Bookmarked,
+  EditPost,
 } from "./routes";
 import { Footer, Header, NotFound, Navigation } from "./components";
 
@@ -101,6 +102,7 @@ const App = () => {
                 </Route>
                 {user.user ? (
                   <>
+                    <Route path="/post/:postNum/edit" element={<EditPost />} />
                     <Route path="/logout" element={<Logout />} />
                     <Route path="/post/new" element={<NewPost />} />
                     <Route path="/following" element={<Following />}>

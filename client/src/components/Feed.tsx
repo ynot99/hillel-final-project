@@ -1,6 +1,7 @@
 import "./Feed.scss";
 import "./Post.scss";
 
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 
 import Bookmark from "./Bookmark";
@@ -9,12 +10,14 @@ import IPost from "../interfaces/Post";
 import UserInfo from "./UserInfo";
 import Votes from "./Votes";
 import DraftJSContent from "./DraftJSContent";
+import { AuthContext } from "../App";
 
 interface FeedProps {
   articleList: Array<IPost>;
 }
 
 const Feed = ({ articleList }: FeedProps) => {
+  const authContext = useContext(AuthContext);
   return (
     <ul className="feed-list">
       {articleList.map((item) => {
@@ -25,6 +28,9 @@ const Feed = ({ articleList }: FeedProps) => {
             tabIndex={0}
           >
             <article className="feed-list__post post">
+              {authContext.user && authContext.user.id === item.author?.id && (
+                <Link to={`/post/${item.id}/edit`}>edit</Link>
+              )}
               <UserInfo author={item.author} created_at={item.created_at} />
               <Link className="post__heading-link" to={`/post/${item.id}`}>
                 <h2 className="post__heading">{item.header}</h2>

@@ -12,6 +12,8 @@ from rest_framework.generics import (
     DestroyAPIView,
     ListAPIView,
     RetrieveAPIView,
+    RetrieveUpdateAPIView,
+    RetrieveUpdateDestroyAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
@@ -110,6 +112,20 @@ class PostView(RetrieveAPIView):
         return Response(
             {"post": serializer.data, "comments": comment_serializer.data}
         )
+
+
+class PostAuthorizedView(RetrieveUpdateDestroyAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = PostCreateSerializer
+
+    def get_queryset(self):
+        try:
+            user = UserProfile.objects.get(user__pk=self.request.user.id)
+        except UserProfile.DoesNotExist:
+            return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
+
+        return Post.objects.filter(author__pk=user.id)
 
 
 class PostCreateView(CreateAPIView):
