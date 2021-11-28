@@ -11,7 +11,7 @@ Pillow = "==8.4.0"
 psycopg2-binary = "==2.9.1"
 
 [dev-packages]
-black = "*"
+pylint-django = "*"
 
 [requires]
 python_version = "3.9"

@@ -6,7 +6,6 @@ from authapp.models import User
 from .models import Post, UserFollow, BookmarkPost, Comment
 
 
-# region Bookmark
 class BookmarkCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookmarkPost
@@ -16,10 +15,6 @@ class BookmarkCreateSerializer(serializers.ModelSerializer):
         ]
 
 
-# endregion Bookmark
-
-
-# region User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -113,9 +108,22 @@ class UserForProfileSerializer(serializers.ModelSerializer):
         ]
 
 
-# endregion User
+class CommentSerializer(serializers.ModelSerializer):
+    user = UserForPostSerializer()
 
-# region Post
+    class Meta:
+        model = Comment
+        fields = [
+            "id",
+            "user",
+            "content",
+            "reply_to",
+            "upvotes",
+            "downvotes",
+            "created_at",
+        ]
+
+
 class PostSerializer(serializers.ModelSerializer):
     author = UserForPostSerializer()
     bookmark_count = serializers.SerializerMethodField("get_bookmark_count")
@@ -156,6 +164,18 @@ class PostSerializer(serializers.ModelSerializer):
         ]
 
 
+class PostWithCommentsSerializer(PostSerializer):
+    comments = serializers.SerializerMethodField("get_comments")
+
+    def get_comments(self, post):
+        return CommentSerializer(
+            Comment.objects.filter(post__pk=post.id), many=True
+        ).data
+
+    class Meta(PostSerializer.Meta):
+        fields = PostSerializer.Meta.fields + ["comments"]
+
+
 class PostCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
@@ -172,25 +192,6 @@ class PostHeaderSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "header",
-        ]
-
-
-# endregion Post
-
-# region Comment
-class CommentSerializer(serializers.ModelSerializer):
-    user = UserForPostSerializer()
-
-    class Meta:
-        model = Comment
-        fields = [
-            "id",
-            "user",
-            "content",
-            "reply_to",
-            "upvotes",
-            "downvotes",
-            "created_at",
         ]
 
 
@@ -222,9 +223,6 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         ]
 
 
-# endregion Comment
-
-# region UserFollow
 class UserFollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserFollow
@@ -245,6 +243,3 @@ class UserFollowByFollowerSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserFollow
         fields = ["user"]
-
-
-# endregion UserFollow

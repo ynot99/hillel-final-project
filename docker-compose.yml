@@ -15,3 +15,41 @@ services:
       - 5432:5432
     env_file:
       - ./conf/db.env
+  api:
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile
+    image: ynot99/blog_django
+    networks:
+      - blog_network
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    env_file:
+      - ./conf/api.env
+  client:
+    build:
+      context: ./client
+      dockerfile: ./Dockerfile
+    image: ynot99/blog_react
+    networks:
+      - blog_network
+    ports:
+      - 5000:5000
+    depends_on:
+      - api
+    env_file:
+      - ./conf/client.env
+  nginx:
+    image: nginx:1.13
+    networks:
+      - blog_network
+    ports:
+      - 9999:80
+    depends_on:
+      - api
+      - client
+    volumes:
+      - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./conf/nginx/mime.types:/etc/nginx/mime.types

@@ -7,6 +7,7 @@ const Login = () => {
   const authContext = useContext(AuthContext);
   return (
     <Form
+      header="Sign In"
       fetchurl="api/token-auth"
       inputs={[
         {

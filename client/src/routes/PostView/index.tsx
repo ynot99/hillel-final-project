@@ -6,13 +6,9 @@ import { Post } from "../../components";
 
 import { promiseCopyPaste, getAuthTokenHeaders } from "../../utils";
 
-import IComment from "../../interfaces/Comment";
-import IPost from "../../interfaces/Post";
-
 const PostView = () => {
   const pageParams = useParams();
-  const [postViewData, setPostViewData] =
-    useState<{ post: IPost; comments: Array<IComment> }>();
+  const [postViewData, setPostViewData] = useState<any>();
 
   useEffect(() => {
     promiseCopyPaste(
@@ -32,9 +28,22 @@ const PostView = () => {
     <>
       {postViewData ? (
         <>
-          <Post postData={postViewData.post} />
+          <Post
+            postData={{
+              bookmark_count: postViewData.bookmark_count,
+              comment_count: postViewData.comment_count,
+              content: postViewData.content,
+              created_at: postViewData.created_at,
+              upvotes: postViewData.upvotes,
+              downvotes: postViewData.downvotes,
+              header: postViewData.header,
+              id: postViewData.id,
+              is_bookmarked: postViewData.is_bookmarked,
+              author: postViewData.author,
+            }}
+          />
           <CommentSection
-            postID={postViewData.post.id}
+            postID={postViewData.id}
             comments={postViewData.comments}
           />
         </>

@@ -11,9 +11,10 @@ import {
   Logout,
   Profile,
   NewPost,
-  Followed as Following,
+  Followed,
   Bookmarked,
   EditPost,
+  DeletePost,
 } from "./routes";
 import { Footer, Header, NotFound, Navigation } from "./components";
 import { promiseCopyPaste } from "./utils";
@@ -85,11 +86,16 @@ const App = () => {
                 </Route>
                 {userState.user ? (
                   <>
-                    <Route path="/post/:postNum/edit" element={<EditPost />} />
                     <Route path="/logout" element={<Logout />} />
+
+                    <Route path="/post/:postNum/edit" element={<EditPost />} />
+                    <Route
+                      path="/post/:postNum/delete"
+                      element={<DeletePost />}
+                    />
                     <Route path="/post/new" element={<NewPost />} />
-                    <Route path="/following" element={<Following />}>
-                      <Route path=":pageNum" element={<Following />} />
+                    <Route path="/following" element={<Followed />}>
+                      <Route path=":pageNum" element={<Followed />} />
                     </Route>
                     <Route path="/bookmarked" element={<Bookmarked />}>
                       <Route path=":pageNum" element={<Bookmarked />} />

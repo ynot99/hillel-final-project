@@ -10,7 +10,13 @@ import {
   RichUtils,
 } from "draft-js";
 
-const CustomEditor = ({ content, setContent }: any) => {
+const CustomEditor = ({
+  content,
+  setContent,
+}: {
+  content: EditorState;
+  setContent: React.Dispatch<EditorState>;
+}) => {
   const keyBindingFn = (e: any) => {
     if (e.keyCode === 13 && e.shiftKey) {
       setContent(RichUtils.insertSoftNewline(content));
@@ -48,6 +54,7 @@ const CustomEditor = ({ content, setContent }: any) => {
       handlePastedText={handlePastedText}
       blockStyleFn={blockStyleFn}
       keyBindingFn={keyBindingFn}
+      placeholder="Type here..."
     />
   );
 };

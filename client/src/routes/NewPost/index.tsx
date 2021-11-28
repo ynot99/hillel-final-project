@@ -31,7 +31,11 @@ const NewPost = () => {
   return (
     <>
       <CustomEditor content={content} setContent={setContent} />
-      <button className="btn4" onClick={handleSubmit}>
+      <button
+        className="btn4"
+        onClick={handleSubmit}
+        disabled={!content.getCurrentContent().hasText()}
+      >
         Post
       </button>
     </>

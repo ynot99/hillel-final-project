@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { promiseCopyPaste } from "../utils";
 
 interface FormProps {
+  header: string;
   fetchurl: string;
   inputs?: Array<{
     name: string;
@@ -21,6 +22,7 @@ interface ObjStrKeys {
 }
 
 const Form = ({
+  header,
   fetchurl,
   inputs = [],
   submitText = "Submit",
@@ -67,7 +69,7 @@ const Form = ({
   // TODO style and errors
   return (
     <form onSubmit={handleSubmit} className="auth-form">
-      <h2 className="auth-form__heading">Sign Up</h2>
+      <h2 className="auth-form__heading">{header}</h2>
       {inputs.map((item) => (
         <div key={item.name} className="auth-form__input-container">
           <label className="auth-form__label">{item.label}</label>

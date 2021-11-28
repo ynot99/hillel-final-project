@@ -3,6 +3,7 @@ import { Form } from "../../components";
 const Register = () => {
   return (
     <Form
+      header="Sign Up"
       fetchurl="api/v1/authapp/register"
       redirectTo="/login"
       inputs={[

@@ -28,7 +28,20 @@ const Post = ({ postData, link }: PostProps) => {
       {postData ? (
         <>
           {authContext.user && authContext.user.id === postData.author?.id && (
-            <Link to={`/post/${postData.id}/edit`}>edit</Link>
+            <div className="post__actions">
+              <Link
+                className="post__action link"
+                to={`/post/${postData.id}/edit`}
+              >
+                edit
+              </Link>
+              <Link
+                className="post__action link"
+                to={`/post/${postData.id}/delete`}
+              >
+                delete
+              </Link>
+            </div>
           )}
           <UserInfo author={postData.author} created_at={postData.created_at} />
           {link ? (

@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from rest_framework import exceptions, mixins
 from rest_framework.serializers import Serializer
 from rest_framework import generics, status
@@ -10,12 +9,12 @@ from authapp.models import User
 from .models import BookmarkPost, Comment, Post, UserFollow
 from .serializers import (
     CommentForUserProfileSerializer,
+    PostWithCommentsSerializer,
     UserFollowByFollowerSerializer,
     UserFollowByUserSerializer,
     UserForUserFollowSerializer,
     BookmarkCreateSerializer,
     CommentCreateSerializer,
-    CommentSerializer,
     PostCreateSerializer,
     PostSerializer,
     UserFollowSerializer,
@@ -65,18 +64,7 @@ class PostsBookmarkAuthorizedView(generics.ListAPIView):
 class PostView(generics.RetrieveAPIView):
     authentication_classes = [TokenAuthentication]
     queryset = Post.objects.all()
-    serializer_class = PostSerializer
-
-    def get(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        comment_serializer = CommentSerializer(
-            Comment.objects.filter(post__pk=serializer.data["id"]), many=True
-        )
-        # TODO optimize comment count
-        return Response(
-            {"post": serializer.data, "comments": comment_serializer.data}
-        )
+    serializer_class = PostWithCommentsSerializer
 
 
 class PostAuthorizedView(generics.RetrieveUpdateDestroyAPIView):
@@ -119,67 +107,26 @@ class BookmarkView(
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# TODO TOTALLY NOT OK!
-class UserFollowView(
-    mixins.CreateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView
-):
+class UserFollowView(mixins.CreateModelMixin, generics.DestroyAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = UserFollowSerializer
 
     def post(self, request, *args, **kwargs):
-        # try:
-        #     user = User.objects.get(user__pk=request.user.id)
-        # except User.DoesNotExist:
-        #     return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
         request.data["user"] = request.user.id
         return super().create(request, *args, **kwargs)
 
     def get_object(self):
-        # try:
-        #     user = User.objects.get(user__pk=self.request.user.id)
-        # except User.DoesNotExist:
-        #     raise exceptions.bad_request(
-        #         self.request, exception=exceptions.NotFound
-        #     )
-        #     # return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
         try:
             instance = UserFollow.objects.get(
                 user__pk=self.request.user.id,
                 follower=self.request.data["follower"],
             )
         except UserFollow.DoesNotExist:
-            raise exceptions.bad_request(
-                self.request, exception=exceptions.NotFound
-            )
-            # return Response(
-            #     "User is not following", status=HTTP_400_BAD_REQUEST
-            # )
+            # TODO I think it must be a bad request exception
+            raise exceptions.NotFound
 
         return instance
-
-    def delete(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
-
-    # def delete(self, request, *args, **kwargs):
-    #     try:
-    #         user = UserProfile.objects.get(user__pk=request.user.id)
-    #     except UserProfile.DoesNotExist:
-    #         return Response("User doesn't exist", status=HTTP_400_BAD_REQUEST)
-    #     try:
-    #         instance = UserFollow.objects.get(
-    #             user=user, follower=request.data["follower"]
-    #         )
-    #     except UserFollow.DoesNotExist:
-    #         return Response(
-    #             "User is not following", status=HTTP_400_BAD_REQUEST
-    #         )
-
-    #     self.perform_destroy(instance)
-    #     return Response(status=HTTP_204_NO_CONTENT)
-
-
-# TODO OK
 
 
 class PostsView(generics.ListAPIView):
@@ -206,7 +153,7 @@ class UserProfileAuthenticatedView(generics.RetrieveAPIView):
 
 
 class CommentView(
-    mixins.DestroyModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
+    mixins.CreateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView
 ):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]

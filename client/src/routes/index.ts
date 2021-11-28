@@ -8,6 +8,7 @@ import NewPost from "./NewPost";
 import Bookmarked from "./Bookmarked";
 import Followed from "./Followed";
 import EditPost from "./EditPost";
+import DeletePost from "./DeletePost";
 
 export {
   Main,
@@ -20,4 +21,5 @@ export {
   Bookmarked,
   Followed,
   EditPost,
+  DeletePost,
 };
