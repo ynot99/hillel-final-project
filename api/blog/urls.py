@@ -1,10 +1,15 @@
 from django.urls import path
 
 from .views import (
+    CommentByReplyToView,
     CommentUserProfileView,
     PostAuthorizedView,
     PostCreateView,
     PostsByUserProfileView,
+    PostsLikedAuthorizedView,
+    PostsLikedView,
+    RatingCommentView,
+    RatingPostView,
     UserFollowByFollowerView,
     UserFollowByUserView,
     UserProfileAuthenticatedView,
@@ -56,6 +61,26 @@ urlpatterns = [
         name="posts_bookmark_authorized",
     ),
     path(
+        "post/liked/<int:pk>/",
+        PostsLikedView.as_view(),
+        name="posts_liked",
+    ),
+    path(
+        "post/liked/",
+        PostsLikedAuthorizedView.as_view(),
+        name="posts_liked_authorized",
+    ),
+    path(
+        "rating/post/",
+        RatingPostView.as_view(),
+        name="rating_post",
+    ),
+    path(
+        "rating/comment/",
+        RatingCommentView.as_view(),
+        name="rating_comment",
+    ),
+    path(
         "bookmark/",
         BookmarkView.as_view(),
         name="bookmark",
@@ -64,6 +89,11 @@ urlpatterns = [
         "comment/",
         CommentView.as_view(),
         name="comment",
+    ),
+    path(
+        "comment/reply_to/<int:pk>",
+        CommentByReplyToView.as_view(),
+        name="comment_by_reply_to",
     ),
     path(
         "user_profile/<slug:slug>",

@@ -1,7 +1,8 @@
 const promiseCopyPaste = (
   copyPastePromise: Promise<Response>,
   resultFunc: Function,
-  catchFunc?: Function
+  catchFunc?: Function,
+  finallyFunc?: Function
 ) => {
   copyPastePromise
     .then((response) => {
@@ -17,6 +18,9 @@ const promiseCopyPaste = (
     })
     .catch((err) => {
       if (catchFunc) catchFunc(err);
+    })
+    .finally(() => {
+      if (finallyFunc) finallyFunc();
     });
 };
 

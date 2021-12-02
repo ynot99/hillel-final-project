@@ -1,9 +1,15 @@
 import { Posts, FeedFilter } from "./";
 
-const Feed = ({ fetchURL = "" }) => {
+const Feed = ({
+  heading,
+  fetchURL = "",
+}: {
+  heading: string;
+  fetchURL?: string;
+}) => {
   return (
     <>
-      <FeedFilter />
+      <FeedFilter heading={heading} />
       <Posts fetchURL={fetchURL} />
     </>
   );

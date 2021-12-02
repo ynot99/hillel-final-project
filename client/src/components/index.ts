@@ -10,6 +10,7 @@ import Navigation from "./Navigation";
 import CustomEditor from "./CustomEditor";
 import Posts from "./Posts";
 import UserProfile from "./UserProfile";
+import Popup from "./Popup";
 
 export {
   Header,
@@ -24,4 +25,5 @@ export {
   CustomEditor,
   Feed,
   UserProfile,
+  Popup,
 };

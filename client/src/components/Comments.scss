@@ -1,6 +1,29 @@
 .comments {
+  &__header {
+    background-color: white;
+    padding: 15px 20px 0 20px;
+  }
+
+  &__link &__heading {
+    color: #333;
+    font-size: 1.0625rem;
+    line-height: 1.5rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    display: inline-block;
+  }
+  &__link:hover &__heading {
+    color: #487284;
+  }
+  &__hr {
+    border: 0;
+    border-bottom: 1px solid #dfe8ea;
+    margin-top: 12px;
+  }
+
   &__item {
     margin-bottom: 8px;
+    background-color: white;
   }
   &__item:last-child {
     margin-bottom: 0;

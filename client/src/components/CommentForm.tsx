@@ -1,19 +1,25 @@
 import "./CommentForm.scss";
 
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { EditorState, convertToRaw } from "draft-js";
 
 import { CustomEditor } from ".";
 import { promiseCopyPaste, getAuthTokenHeaders } from "../utils";
-import { AuthContext } from "../App";
+import { useAppSelector } from "../redux/hooks";
+import { useDispatch } from "react-redux";
+import { addPopup } from "../redux/popup/popupSlice";
 
 const CommentForm = ({ postID }: { postID: number }) => {
-  const authContext = useContext(AuthContext);
+  const user = useAppSelector((state) => state.userauth.user);
   const [comment, setComment] = useState(() => EditorState.createEmpty());
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSent, setIsSent] = useState(false);
+  const dispatch = useDispatch();
 
   const handleCommentSend = (e: any) => {
     const raw = convertToRaw(comment.getCurrentContent());
+    setIsLoading(true);
 
     promiseCopyPaste(
       fetch("/api/v1/blog/comment/", {
@@ -21,7 +27,6 @@ const CommentForm = ({ postID }: { postID: number }) => {
         body: JSON.stringify({
           post: postID,
           content: JSON.stringify(raw),
-          // TODO implement replies
           reply_to: null,
         }),
         headers: new Headers({
@@ -30,25 +35,37 @@ const CommentForm = ({ postID }: { postID: number }) => {
         }),
       }),
       (result: any) => {
-        console.log(result);
+        setIsSent(true);
+      },
+      (err: any) => {
+        dispatch(addPopup("Something went wrong with your comment"));
+      },
+      () => {
+        setIsLoading(false);
       }
     );
   };
   return (
     <>
-      {authContext.user ? (
+      {user ? (
         <div className="comment-form">
-          <div className="comment-form__form">
-            <label className="comment-form__label">Leave a comment</label>
-            <CustomEditor content={comment} setContent={setComment} />
-          </div>
-          <button
-            onClick={handleCommentSend}
-            className="comment-form__submit btn4"
-            disabled={!comment.getCurrentContent().hasText()}
-          >
-            Send
-          </button>
+          {!isSent ? (
+            <>
+              <div className="comment-form__form">
+                <label className="comment-form__label">Leave a comment</label>
+                <CustomEditor content={comment} setContent={setComment} />
+              </div>
+              <button
+                onClick={handleCommentSend}
+                className="comment-form__submit btn4"
+                disabled={!comment.getCurrentContent().hasText() || isLoading}
+              >
+                Send
+              </button>
+            </>
+          ) : (
+            <p>Comment is successfully sent!</p>
+          )}
         </div>
       ) : (
         <div className="block">

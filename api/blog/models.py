@@ -1,5 +1,4 @@
 from django.db import models
-from django.core.validators import MinValueValidator
 
 from api.settings import AUTH_USER_MODEL
 
@@ -22,10 +21,6 @@ class Post(models.Model):
         to=AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL
     )
     content = models.TextField()
-    upvotes = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    downvotes = models.IntegerField(
-        default=0, validators=[MinValueValidator(0)]
-    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -42,15 +37,33 @@ class Comment(models.Model):
     reply_to = models.ForeignKey(
         to="self", null=True, blank=True, on_delete=models.CASCADE
     )
-    upvotes = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    downvotes = models.IntegerField(
-        default=0, validators=[MinValueValidator(0)]
-    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["-created_at"]
+        ordering = ["created_at"]
+
+
+class RatingBase(models.Model):
+    is_upvote = models.BooleanField()
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True
+
+
+class RatingPost(RatingBase):
+    post = models.ForeignKey(to=Post, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ["user", "post"]
+
+
+class RatingComment(RatingBase):
+    comment = models.ForeignKey(to=Comment, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ["user", "comment"]
 
 
 class BookmarkBase(models.Model):

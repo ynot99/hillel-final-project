@@ -1,3 +1,5 @@
+import "./Form.scss";
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -66,27 +68,32 @@ const Form = ({
     );
   };
 
-  // TODO style and errors
+  // TODO show errors
   return (
-    <form onSubmit={handleSubmit} className="auth-form">
-      <h2 className="auth-form__heading">{header}</h2>
-      {inputs.map((item) => (
-        <div key={item.name} className="auth-form__input-container">
-          <label className="auth-form__label">{item.label}</label>
-          <input
-            className="auth-form__input"
-            name={item.name}
-            type={item.type}
-            required={item.required}
-            onChange={(e) => {
-              setFormData({ ...formData, [item.name]: e.target.value });
-            }}
-          />
-          {/* {fieldsIsError[item["name"]] ?? <span>Error</span>} */}
-        </div>
-      ))}
-      <input type="submit" value={submitText} />
-    </form>
+    <div className="shadow-container">
+      <h1 className="form__heading">{header}</h1>
+      <form onSubmit={handleSubmit} className="form">
+        {inputs.map((item, index) => (
+          <div key={item.name} className="form__input-container">
+            <label htmlFor={item.name} className="form__label">
+              {item.label} {item.required && "*"}
+            </label>
+            <input
+              autoFocus={index === 0}
+              className="form__input"
+              id={item.name}
+              name={item.name}
+              type={item.type}
+              required={item.required}
+              onChange={(e) => {
+                setFormData({ ...formData, [item.name]: e.target.value });
+              }}
+            />
+          </div>
+        ))}
+        <input className="form__button btn6" type="submit" value={submitText} />
+      </form>
+    </div>
   );
 };
 

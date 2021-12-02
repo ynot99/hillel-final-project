@@ -1,9 +1,27 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.request import Request
 
-from authapp.models import User
-from .models import Post, UserFollow, BookmarkPost, Comment
+from .models import (
+    Post,
+    RatingPost,
+    RatingComment,
+    UserFollow,
+    BookmarkPost,
+    Comment,
+)
+
+
+class RatingPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RatingPost
+        fields = ["is_upvote", "user", "post"]
+
+
+class RatingCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RatingComment
+        fields = ["is_upvote", "user", "comment"]
 
 
 class BookmarkCreateSerializer(serializers.ModelSerializer):
@@ -17,7 +35,7 @@ class BookmarkCreateSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = get_user_model()
         fields = [
             "id",
             "username",
@@ -29,7 +47,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserForPostSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = get_user_model()
         fields = [
             "id",
             "username",
@@ -40,7 +58,7 @@ class UserForPostSerializer(serializers.ModelSerializer):
 
 class UserForUserFollowSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = get_user_model()
         fields = [
             "id",
             "slug",
@@ -55,6 +73,7 @@ class UserForProfileSerializer(serializers.ModelSerializer):
     post_count = serializers.SerializerMethodField("get_post_count")
     comment_count = serializers.SerializerMethodField("get_comment_count")
     bookmark_count = serializers.SerializerMethodField("get_bookmark_count")
+    like_count = serializers.SerializerMethodField("get_like_count")
     followers_count = serializers.SerializerMethodField("get_followers_count")
     follow_count = serializers.SerializerMethodField("get_follow_count")
     is_followed_by_authorized_user = serializers.SerializerMethodField(
@@ -69,6 +88,9 @@ class UserForProfileSerializer(serializers.ModelSerializer):
 
     def get_bookmark_count(self, profile):
         return BookmarkPost.objects.filter(user=profile).count()
+
+    def get_like_count(self, profile):
+        return RatingPost.objects.filter(user=profile, is_upvote=True).count()
 
     def get_followers_count(self, profile):
         return UserFollow.objects.filter(user=profile).count()
@@ -92,7 +114,7 @@ class UserForProfileSerializer(serializers.ModelSerializer):
         return True
 
     class Meta:
-        model = User
+        model = get_user_model()
         fields = [
             "id",
             "first_name",
@@ -102,6 +124,7 @@ class UserForProfileSerializer(serializers.ModelSerializer):
             "post_count",
             "comment_count",
             "bookmark_count",
+            "like_count",
             "followers_count",
             "follow_count",
             "is_followed_by_authorized_user",
@@ -110,6 +133,33 @@ class UserForProfileSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     user = UserForPostSerializer()
+    rating = serializers.SerializerMethodField("get_rating")
+    is_upvote = serializers.SerializerMethodField("get_is_upvote")
+
+    def get_rating(self, comment):
+        rating_comments = RatingComment.objects.filter(comment=comment)
+        if not len(rating_comments):
+            return 0
+
+        rating = 0
+        for rating_comment in rating_comments:
+            rating += 1 if rating_comment.is_upvote else -1
+
+        return rating
+
+    def get_is_upvote(self, comment):
+        request: Request = self.context.get("request", None)
+        if request.user.is_anonymous:
+            return None
+
+        try:
+            rating_comment = RatingComment.objects.get(
+                user__pk=request.user.id, comment=comment
+            )
+        except RatingComment.DoesNotExist:
+            return None
+
+        return rating_comment.is_upvote
 
     class Meta:
         model = Comment
@@ -118,9 +168,21 @@ class CommentSerializer(serializers.ModelSerializer):
             "user",
             "content",
             "reply_to",
-            "upvotes",
-            "downvotes",
             "created_at",
+            "rating",
+            "is_upvote",
+        ]
+
+
+class CommentWithReplyCountSerializer(CommentSerializer):
+    reply_count = serializers.SerializerMethodField("get_reply_count")
+
+    def get_reply_count(self, comment):
+        return Comment.objects.filter(reply_to=comment).count()
+
+    class Meta(CommentSerializer.Meta):
+        fields = CommentSerializer.Meta.fields + [
+            "reply_count",
         ]
 
 
@@ -128,6 +190,8 @@ class PostSerializer(serializers.ModelSerializer):
     author = UserForPostSerializer()
     bookmark_count = serializers.SerializerMethodField("get_bookmark_count")
     comment_count = serializers.SerializerMethodField("get_comment_count")
+    rating = serializers.SerializerMethodField("get_rating")
+    is_upvote = serializers.SerializerMethodField("get_is_upvote")
     is_bookmarked = serializers.SerializerMethodField("get_is_bookmarked")
 
     def get_bookmark_count(self, post):
@@ -135,6 +199,31 @@ class PostSerializer(serializers.ModelSerializer):
 
     def get_comment_count(self, post):
         return Comment.objects.filter(post=post).count()
+
+    def get_rating(self, post):
+        rating_posts = RatingPost.objects.filter(post=post)
+        if not len(rating_posts):
+            return 0
+
+        rating = 0
+        for rating_post in rating_posts:
+            rating += 1 if rating_post.is_upvote else -1
+
+        return rating
+
+    def get_is_upvote(self, post):
+        request: Request = self.context.get("request", None)
+        if request.user.is_anonymous:
+            return None
+
+        try:
+            rating_post = RatingPost.objects.get(
+                user__pk=request.user.id, post=post
+            )
+        except RatingPost.DoesNotExist:
+            return None
+
+        return rating_post.is_upvote
 
     def get_is_bookmarked(self, post):
         request: Request = self.context.get("request", None)
@@ -155,9 +244,9 @@ class PostSerializer(serializers.ModelSerializer):
             "header",
             "author",
             "content",
-            "upvotes",
-            "downvotes",
             "created_at",
+            "rating",
+            "is_upvote",
             "is_bookmarked",
             "bookmark_count",
             "comment_count",
@@ -168,8 +257,10 @@ class PostWithCommentsSerializer(PostSerializer):
     comments = serializers.SerializerMethodField("get_comments")
 
     def get_comments(self, post):
-        return CommentSerializer(
-            Comment.objects.filter(post__pk=post.id), many=True
+        return CommentWithReplyCountSerializer(
+            Comment.objects.filter(post__pk=post.id, reply_to=None),
+            many=True,
+            context={"request": self.context.get("request", None)},
         ).data
 
     class Meta(PostSerializer.Meta):
@@ -198,6 +289,33 @@ class PostHeaderSerializer(serializers.ModelSerializer):
 class CommentForUserProfileSerializer(serializers.ModelSerializer):
     user = UserForPostSerializer()
     post = PostHeaderSerializer()
+    rating = serializers.SerializerMethodField("get_rating")
+    is_upvote = serializers.SerializerMethodField("get_is_upvote")
+
+    def get_rating(self, comment):
+        rating_comments = RatingComment.objects.filter(comment=comment)
+        if not len(rating_comments):
+            return 0
+
+        rating = 0
+        for rating_comment in rating_comments:
+            rating += 1 if rating_comment.is_upvote else -1
+
+        return rating
+
+    def get_is_upvote(self, comment):
+        request: Request = self.context.get("request", None)
+        if request.user.is_anonymous:
+            return None
+
+        try:
+            rating_comment = RatingComment.objects.get(
+                user__pk=request.user.id, comment=comment
+            )
+        except RatingComment.DoesNotExist:
+            return None
+
+        return rating_comment.is_upvote
 
     class Meta:
         model = Comment
@@ -206,8 +324,8 @@ class CommentForUserProfileSerializer(serializers.ModelSerializer):
             "user",
             "content",
             "post",
-            "upvotes",
-            "downvotes",
+            "rating",
+            "is_upvote",
             "created_at",
         ]
 

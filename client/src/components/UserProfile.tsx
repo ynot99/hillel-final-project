@@ -1,10 +1,8 @@
 import "./UserProfile.scss";
 import no_avatar from "../assets/img/no-user-image.gif";
 
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes, useParams } from "react-router";
-
-import { AuthContext } from "../App";
 
 import { Posts } from ".";
 import ProfileMenu from "./ProfileMenu";
@@ -12,6 +10,9 @@ import Users from "./Users";
 
 import { promiseCopyPaste, getAuthTokenHeaders } from "../utils";
 import Comments from "./Comments";
+import { useAppSelector } from "../redux/hooks";
+import { useDispatch } from "react-redux";
+import { unauthorized } from "../redux/popup/popupSlice";
 
 interface IUser {
   id: number;
@@ -23,13 +24,15 @@ interface IUser {
   comment_count: number;
   bookmark_count: number;
   followers_count: number;
+  like_count: number;
   follow_count: number;
   is_followed_by_authorized_user: boolean;
 }
 
 const UserProfile = () => {
-  const authContext = useContext(AuthContext);
+  const user = useAppSelector((state) => state.userauth.user);
   const profileSlug = useParams()["profileSlug"];
+  const dispatch = useDispatch();
 
   const [profile, setProfile] = useState<IUser>();
   const [following, setFollowing] = useState(false);
@@ -46,12 +49,15 @@ const UserProfile = () => {
       (result: IUser) => {
         setFollowing(result.is_followed_by_authorized_user);
         setProfile(result);
-        console.log(result);
       }
     );
   }, [profileSlug]);
 
   const handleFollow = (followingUserID: number, unfollow?: boolean) => {
+    if (!user) {
+      dispatch(unauthorized());
+      return;
+    }
     let method = "POST";
     if (unfollow) {
       method = "DELETE";
@@ -82,7 +88,7 @@ const UserProfile = () => {
                 src={profile["avatar"] ?? no_avatar}
                 alt="avatar"
               />
-              {profile.id !== authContext.user?.id && (
+              {profile.id !== user?.id && (
                 <button
                   onClick={() => {
                     handleFollow(profile.id, following);
@@ -106,6 +112,7 @@ const UserProfile = () => {
             followersCount={profile.followers_count}
             bookmarkCount={profile.bookmark_count}
             commentCount={profile.comment_count}
+            likesCount={profile.like_count}
             followCount={profile.follow_count}
             postCount={profile.post_count}
           />
@@ -135,6 +142,15 @@ const UserProfile = () => {
               <Route
                 path=":pageNum"
                 element={<Posts fetchURL={`bookmark/${profile.id}`} />}
+              />
+            </Route>
+            <Route
+              path="likes"
+              element={<Posts fetchURL={`liked/${profile.id}`} />}
+            >
+              <Route
+                path=":pageNum"
+                element={<Posts fetchURL={`liked/${profile.id}`} />}
               />
             </Route>
             <Route

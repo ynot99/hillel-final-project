@@ -1,11 +1,17 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { EditorState, convertToRaw } from "draft-js";
+import { useNavigate } from "react-router";
 
-import { CustomEditor } from "../../components";
 import { promiseCopyPaste, getAuthTokenHeaders } from "../../utils";
+import { addPopup } from "../../redux/popup/popupSlice";
+import PostEditor from "../../components/PostEditor";
 
 const NewPost = () => {
+  const [heading, setHeading] = useState("");
   const [content, setContent] = useState(() => EditorState.createEmpty());
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSubmit = () => {
     const raw = convertToRaw(content.getCurrentContent());
@@ -14,7 +20,7 @@ const NewPost = () => {
       fetch("/api/v1/blog/post/create", {
         method: "POST",
         body: JSON.stringify({
-          header: "test header",
+          header: heading,
           content: JSON.stringify(raw),
         }),
         headers: new Headers({
@@ -23,22 +29,21 @@ const NewPost = () => {
         }),
       }),
       (result: any) => {
-        console.log(result);
+        dispatch(addPopup("Post is successfully created!"));
+        navigate("/all");
       }
     );
   };
 
   return (
-    <>
-      <CustomEditor content={content} setContent={setContent} />
-      <button
-        className="btn4"
-        onClick={handleSubmit}
-        disabled={!content.getCurrentContent().hasText()}
-      >
-        Post
-      </button>
-    </>
+    <PostEditor
+      btnText="Post"
+      heading={heading}
+      setHeading={setHeading}
+      content={content}
+      setContent={setContent}
+      handleSubmit={handleSubmit}
+    />
   );
 };
 

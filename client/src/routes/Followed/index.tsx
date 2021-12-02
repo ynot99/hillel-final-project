@@ -1,7 +1,7 @@
 import { Feed } from "../../components";
 
 const Followed = () => {
-  return <Feed fetchURL="user_follow" />;
+  return <Feed heading="Following" fetchURL="user_follow" />;
 };
 
 export default Followed;

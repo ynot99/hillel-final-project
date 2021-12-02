@@ -5,8 +5,8 @@ export default interface IPost {
   header: string;
   author?: IUser;
   content: string;
-  upvotes: number;
-  downvotes: number;
+  is_upvote: boolean;
+  rating: number;
   created_at: Date;
   is_bookmarked: boolean;
   bookmark_count: number;

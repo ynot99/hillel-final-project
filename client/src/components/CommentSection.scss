@@ -23,16 +23,13 @@
   &__comment-list {
   }
   &__comment {
-    // padding: 16px 20px;
+    margin-bottom: 10px;
   }
 
   &__content {
   }
 
   &__reply {
-    background: transparent;
-    border: 0;
-    outline: none;
     user-select: none;
     cursor: pointer;
     color: #548eaa;
@@ -43,5 +40,17 @@
 
   &__footer {
     margin-top: 12px;
+  }
+
+  .show-more {
+    outline: none;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    margin-left: 20px;
+  }
+
+  .reply-list {
+    padding-left: 20px;
   }
 }

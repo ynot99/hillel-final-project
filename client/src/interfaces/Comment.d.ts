@@ -7,7 +7,8 @@ export default interface IComment {
   post: IPost;
   content: string;
   reply_to?: IUser;
-  upvotes: number;
-  downvotes: number;
+  is_upvote: boolean;
+  rating: number;
   created_at: Date;
+  reply_count?: number;
 }

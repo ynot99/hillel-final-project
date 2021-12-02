@@ -7,20 +7,25 @@ const ProfileMenu = ({
   postCount,
   commentCount,
   bookmarkCount,
+  likesCount,
   followersCount,
   followCount,
 }: {
   postCount: number;
   commentCount: number;
   bookmarkCount: number;
+  likesCount: number;
   followersCount: number;
   followCount: number;
 }) => {
+  console.log(likesCount);
+
   const profileTabs = [
     { to: "posts", name: "Posts", count: postCount },
     { to: "comments", name: "Comments", count: commentCount },
     { to: "bookmarks", name: "Bookmarks", count: bookmarkCount },
-    // TODO Bad Logic
+    { to: "likes", name: "Likes", count: likesCount },
+    // FIXME Bad Logic
     { to: "followers", name: "Followers", count: followCount },
     { to: "following", name: "Following", count: followersCount },
   ];

@@ -24,6 +24,7 @@ const PostView = () => {
       }
     );
   }, [pageParams]);
+
   return (
     <>
       {postViewData ? (
@@ -34,8 +35,8 @@ const PostView = () => {
               comment_count: postViewData.comment_count,
               content: postViewData.content,
               created_at: postViewData.created_at,
-              upvotes: postViewData.upvotes,
-              downvotes: postViewData.downvotes,
+              rating: postViewData.rating,
+              is_upvote: postViewData.is_upvote,
               header: postViewData.header,
               id: postViewData.id,
               is_bookmarked: postViewData.is_bookmarked,
@@ -45,6 +46,7 @@ const PostView = () => {
           <CommentSection
             postID={postViewData.id}
             comments={postViewData.comments}
+            commentCount={postViewData.comment_count}
           />
         </>
       ) : (

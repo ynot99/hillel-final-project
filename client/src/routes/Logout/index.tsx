@@ -1,12 +1,16 @@
-import { useContext } from "react";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { Navigate } from "react-router";
 
-import { AuthContext } from "../../App";
+import { addPopup } from "../../redux/popup/popupSlice";
+import { logout } from "../../redux/userauth/userauthSlice";
 
 const Logout = () => {
-  const authContext = useContext(AuthContext);
-  authContext.setUser({ user: undefined });
-  localStorage.removeItem("auth-token");
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(logout());
+    dispatch(addPopup("Successfuly logged out"));
+  }, [dispatch]);
   return <Navigate to="/" />;
 };
 

@@ -1,13 +1,13 @@
 import "./Navigation.scss";
 
 import { NavLink } from "react-router-dom";
-import { useContext, Fragment } from "react";
+import { Fragment } from "react";
 
-import { AuthContext } from "../App";
 import UserMenu from "./UserMenu";
+import { useAppSelector } from "../redux/hooks";
 
 const Navigation = () => {
-  const authContext = useContext(AuthContext);
+  const user = useAppSelector((state) => state.userauth.user);
 
   const links = [
     {
@@ -25,6 +25,11 @@ const Navigation = () => {
       name: "Bookmarked",
       authenticationRequired: true,
     },
+    {
+      to: "/liked",
+      name: "Liked",
+      authenticationRequired: true,
+    },
   ];
   return (
     <nav className="navigation">
@@ -32,7 +37,7 @@ const Navigation = () => {
         <ul className="navigation__list">
           {links.map((item) => {
             if (
-              (item.authenticationRequired && authContext.user) ||
+              (item.authenticationRequired && user) ||
               !item.authenticationRequired
             ) {
               return (

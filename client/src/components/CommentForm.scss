@@ -2,6 +2,17 @@
   background-color: #f7f7f7;
   padding: 16px;
   border-top: 1px solid rgba(146, 156, 165, 0.4);
+  position: relative;
+
+  &__close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+  }
+
+  &__blue {
+    color: #4b8eab;
+  }
 
   &__form {
     margin-bottom: 16px;

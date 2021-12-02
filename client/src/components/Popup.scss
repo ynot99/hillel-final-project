@@ -1,0 +1,38 @@
+.popup-list {
+  position: fixed;
+  right: 15px;
+  bottom: 15px;
+  min-width: 300px;
+  z-index: 999;
+
+  .popup-timer {
+    background-color: #303b44;
+    width: 0;
+    height: 3px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    animation: popupTimer 5s linear;
+  }
+
+  @keyframes popupTimer {
+    from {
+      width: 100%;
+    }
+
+    to {
+      width: 0%;
+    }
+  }
+
+  .popup-item {
+    position: relative;
+    background-color: #ffffff;
+    padding: 15px;
+    transition: bottom 0.5s ease;
+    cursor: pointer;
+    user-select: none;
+    margin-top: 10px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  }
+}

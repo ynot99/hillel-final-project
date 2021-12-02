@@ -1,6 +1,8 @@
 import { useReducer } from "react";
 
 import { getAuthTokenHeaders, promiseCopyPaste } from "../utils";
+import { unauthorized } from "../redux/popup/popupSlice";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 
 interface BookmarkProps {
   id: number;
@@ -9,6 +11,10 @@ interface BookmarkProps {
 }
 
 const Bookmark = ({ id, isActive, count }: BookmarkProps) => {
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.userauth.user);
+
+  // TODO make this redux?
   const bookmarkReducer = (
     state: { isActive: boolean; isLoading: boolean; number: number },
     action: { type: string }
@@ -52,6 +58,10 @@ const Bookmark = ({ id, isActive, count }: BookmarkProps) => {
   });
 
   const handleAddBookmark = () => {
+    if (!user) {
+      dispatch(unauthorized());
+      return;
+    }
     if (bookmarkState["isLoading"]) {
       return;
     }

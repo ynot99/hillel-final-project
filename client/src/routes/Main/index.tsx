@@ -1,7 +1,7 @@
 import { Feed } from "../../components";
 
 const Main = () => {
-  return <Feed />;
+  return <Feed heading="All posts" />;
 };
 
 export default Main;

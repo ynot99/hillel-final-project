@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from rest_framework import exceptions, mixins
 from rest_framework.serializers import Serializer
 from rest_framework import generics, status
@@ -5,11 +6,20 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
 
-from authapp.models import User
-from .models import BookmarkPost, Comment, Post, UserFollow
+from .models import (
+    BookmarkPost,
+    Comment,
+    Post,
+    RatingComment,
+    RatingPost,
+    UserFollow,
+)
 from .serializers import (
     CommentForUserProfileSerializer,
+    CommentSerializer,
     PostWithCommentsSerializer,
+    RatingCommentSerializer,
+    RatingPostSerializer,
     UserFollowByFollowerSerializer,
     UserFollowByUserSerializer,
     UserForUserFollowSerializer,
@@ -61,6 +71,32 @@ class PostsBookmarkAuthorizedView(generics.ListAPIView):
         )
 
 
+class PostsLikedView(generics.ListAPIView):
+    authentication_classes = [TokenAuthentication]
+    serializer_class = PostSerializer
+    queryset = Post.objects.all()
+
+    def get_queryset(self):
+        return Post.objects.filter(
+            pk__in=RatingPost.objects.filter(
+                user__pk=self.kwargs["pk"], is_upvote=True
+            ).values_list("post")
+        )
+
+
+class PostsLikedAuthorizedView(generics.ListAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        return Post.objects.filter(
+            pk__in=RatingPost.objects.filter(
+                user__pk=self.request.user.id, is_upvote=True
+            ).values_list("post")
+        )
+
+
 class PostView(generics.RetrieveAPIView):
     authentication_classes = [TokenAuthentication]
     queryset = Post.objects.all()
@@ -76,35 +112,77 @@ class PostAuthorizedView(generics.RetrieveUpdateDestroyAPIView):
         return Post.objects.filter(author__pk=self.request.user.id)
 
 
-class BookmarkView(
-    mixins.CreateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView
+# TODO rating for post and comment
+class RatingPostView(
+    mixins.CreateModelMixin,
+    generics.RetrieveUpdateDestroyAPIView,
 ):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = RatingPostSerializer
+
+    def post(self, request, *args, **kwargs):
+        request.data["user"] = request.user.id
+        return self.create(request, *args, **kwargs)
+
+    def get_object(self):
+        try:
+            instance = RatingPost.objects.get(
+                user=self.request.user.id, post__pk=self.request.data["post"]
+            )
+        except RatingPost.DoesNotExist:
+            raise exceptions.NotFound
+        return instance
+
+    def update(self, request, *args, **kwargs):
+        request.data["user"] = request.user.id
+        return super().update(request, *args, **kwargs)
+
+
+class RatingCommentView(
+    mixins.CreateModelMixin,
+    generics.RetrieveUpdateDestroyAPIView,
+):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = RatingCommentSerializer
+
+    def post(self, request, *args, **kwargs):
+        request.data["user"] = request.user.id
+        return self.create(request, *args, **kwargs)
+
+    def get_object(self):
+        try:
+            instance = RatingComment.objects.get(
+                user=self.request.user.id,
+                comment__pk=self.request.data["comment"],
+            )
+        except RatingComment.DoesNotExist:
+            raise exceptions.NotFound
+        return instance
+
+    def update(self, request, *args, **kwargs):
+        request.data["user"] = request.user.id
+        return super().update(request, *args, **kwargs)
+
+
+class BookmarkView(mixins.CreateModelMixin, generics.DestroyAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = BookmarkCreateSerializer
 
-    def post(self, request):
-        serializer: Serializer = self.get_serializer(
-            data={"user": request.user.id, "post": request.data["post"]}
-        )
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
-        )
+    def post(self, request, *args, **kwargs):
+        request.data["user"] = request.user.id
+        return self.create(request, *args, **kwargs)
 
-    def delete(self, request, *args, **kwargs):
+    def get_object(self):
         try:
             instance = BookmarkPost.objects.get(
-                user=request.user.id, post__pk=request.data["post"]
+                user=self.request.user.id, post__pk=self.request.data["post"]
             )
         except BookmarkPost.DoesNotExist:
-            return Response(
-                "Bookmark doesn't exist", status=status.HTTP_404_NOT_FOUND
-            )
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+            raise exceptions.NotFound
+        return instance
 
 
 class UserFollowView(mixins.CreateModelMixin, generics.DestroyAPIView):
@@ -149,11 +227,11 @@ class UserProfileAuthenticatedView(generics.RetrieveAPIView):
     serializer_class = UserForUserFollowSerializer
 
     def get_object(self):
-        return User.objects.get(pk=self.request.user.id)
+        return get_user_model().objects.get(pk=self.request.user.id)
 
 
 class CommentView(
-    mixins.CreateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView
+    mixins.CreateModelMixin, generics.RetrieveUpdateDestroyAPIView
 ):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -162,6 +240,42 @@ class CommentView(
     def post(self, request, *args, **kwargs):
         request.data["user"] = request.user.id
         return super().create(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        request.data["user"] = request.user.id
+        request.data["post"] = instance.post.id
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial
+        )
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, "_prefetched_objects_cache", None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+    def get_object(self):
+        try:
+            instance = Comment.objects.get(
+                pk=self.request.data["id"],
+                user__pk=self.request.user.id,
+            )
+        except Comment.DoesNotExist:
+            raise exceptions.NotFound
+
+        return instance
+
+
+class CommentByReplyToView(generics.ListAPIView):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        return Comment.objects.filter(reply_to=self.kwargs["pk"])
 
 
 class PostCreateView(generics.CreateAPIView):
@@ -175,7 +289,7 @@ class PostCreateView(generics.CreateAPIView):
 
 
 class UserProfileView(generics.RetrieveAPIView):
-    queryset = User.objects.all()
+    queryset = get_user_model().objects.all()
     serializer_class = UserForProfileSerializer
     lookup_field = "slug"
 

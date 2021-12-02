@@ -1,10 +1,11 @@
-import { useContext } from "react";
+import { useDispatch } from "react-redux";
 
 import { Form } from "../../components";
-import { AuthContext } from "../../App";
+import { addPopup } from "../../redux/popup/popupSlice";
+import { setUser } from "../../redux/userauth/userauthSlice";
 
 const Login = () => {
-  const authContext = useContext(AuthContext);
+  const dispatch = useDispatch();
   return (
     <Form
       header="Sign In"
@@ -34,16 +35,17 @@ const Login = () => {
         avatar: string;
       }) => {
         localStorage.setItem("auth-token", result.token);
-        authContext.setUser({
-          user: {
+        dispatch(
+          setUser({
             id: result.id,
             slug: result.slug,
             username: result.username,
             firstName: result.first_name,
             lastName: result.last_name,
             avatar: result.avatar,
-          },
-        });
+          })
+        );
+        dispatch(addPopup("Successfully logged in"));
       }}
     />
   );
