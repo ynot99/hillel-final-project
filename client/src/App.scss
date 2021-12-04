@@ -151,11 +151,15 @@
     margin-right: 5px;
     transform: translate(0px, 3px);
   }
+  &__thumb-up path,
+  &__thumb-down path {
+    fill: #798e98;
+  }
 
   &__thumb-up.active path {
-    fill: #579311;
+    fill: #7aa600;
   }
   &__thumb-down.active path {
-    fill: darkred;
+    fill: #d04e4e;
   }
 }

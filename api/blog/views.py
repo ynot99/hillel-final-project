@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import exceptions, mixins
-from rest_framework.serializers import Serializer
-from rest_framework import generics, status
+from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
@@ -48,7 +47,6 @@ class PostsUserFollowView(generics.ListAPIView):
 class PostsBookmarkView(generics.ListAPIView):
     authentication_classes = [TokenAuthentication]
     serializer_class = PostSerializer
-    queryset = Post.objects.all()
 
     def get_queryset(self):
         return Post.objects.filter(
@@ -74,7 +72,6 @@ class PostsBookmarkAuthorizedView(generics.ListAPIView):
 class PostsLikedView(generics.ListAPIView):
     authentication_classes = [TokenAuthentication]
     serializer_class = PostSerializer
-    queryset = Post.objects.all()
 
     def get_queryset(self):
         return Post.objects.filter(
@@ -112,7 +109,6 @@ class PostAuthorizedView(generics.RetrieveUpdateDestroyAPIView):
         return Post.objects.filter(author__pk=self.request.user.id)
 
 
-# TODO rating for post and comment
 class RatingPostView(
     mixins.CreateModelMixin,
     generics.RetrieveUpdateDestroyAPIView,

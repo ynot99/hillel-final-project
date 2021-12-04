@@ -18,8 +18,6 @@ const ProfileMenu = ({
   followersCount: number;
   followCount: number;
 }) => {
-  console.log(likesCount);
-
   const profileTabs = [
     { to: "posts", name: "Posts", count: postCount },
     { to: "comments", name: "Comments", count: commentCount },

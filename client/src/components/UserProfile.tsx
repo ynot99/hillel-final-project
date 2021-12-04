@@ -13,6 +13,7 @@ import Comments from "./Comments";
 import { useAppSelector } from "../redux/hooks";
 import { useDispatch } from "react-redux";
 import { unauthorized } from "../redux/popup/popupSlice";
+import { Link } from "react-router-dom";
 
 interface IUser {
   id: number;
@@ -104,8 +105,13 @@ const UserProfile = () => {
             <div className="profile__bottom">
               <span className="profile__fullname">
                 {profile.first_name} {profile.last_name}
-              </span>
-              <span className="profile__username">@{profile.username}</span>
+              </span>{" "}
+              <Link
+                to={`/profile/${profileSlug}`}
+                className="profile__username link"
+              >
+                @{profile.username}
+              </Link>
             </div>
           </div>
           <ProfileMenu

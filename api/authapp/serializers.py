@@ -1,9 +1,9 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 
 from .models import User
 
 
-class UserRegisterSerializer(ModelSerializer):
+class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
@@ -12,4 +12,14 @@ class UserRegisterSerializer(ModelSerializer):
             "password",
             "first_name",
             "last_name",
+        ]
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "first_name",
+            "last_name",
+            "avatar",
         ]

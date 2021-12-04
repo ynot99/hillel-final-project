@@ -15,8 +15,6 @@ export const userauthSlice = createSlice({
   name: "popup",
   initialState,
   reducers: {
-    // getUserData: (state) => {
-    // },
     setUser: (state, action: PayloadAction<IUser>) => {
       state.user = action.payload;
     },
@@ -30,7 +28,6 @@ export const userauthSlice = createSlice({
 export const { setUser, logout } = userauthSlice.actions;
 
 export const getUserDataAsync = () => (dispatch: any) => {
-  // TODO Warning: Cannot update a component (`App`) while rendering a different component (`Logout`). To locate the bad setState() call inside `Logout`
   const token = localStorage.getItem("auth-token");
   if (!token) return;
   promiseCopyPaste(

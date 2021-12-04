@@ -1,6 +1,7 @@
 .vscode/
 venv/
 conf/
+media
 
 __pycache__/
 

@@ -83,15 +83,13 @@ const Post = ({ postData, link }: PostProps) => {
               className="post__article-part"
               content={postData.content}
             />
-            {link ? (
+            {link && (
               <Link
                 className="post__read-more btn"
                 to={`/post/view/${postData.id}`}
               >
                 Read more
               </Link>
-            ) : (
-              ""
             )}
             <div
               className={
@@ -103,6 +101,7 @@ const Post = ({ postData, link }: PostProps) => {
                 rating={postData.rating}
                 postURL="rating/post/"
                 body={{ post: postData.id }}
+                isRatingBtnsVisible={link ? false : true}
               />
               <div className="article-data__item">
                 <span className="article-data__number">

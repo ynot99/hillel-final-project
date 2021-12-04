@@ -12,11 +12,13 @@ const Votes = ({
   postURL,
   body,
   isUpvoted = null,
+  isRatingBtnsVisible = false,
 }: {
   rating: number;
   postURL: string;
   body: object;
   isUpvoted: boolean | null;
+  isRatingBtnsVisible?: boolean;
 }) => {
   const [isUpvote, setIsUpvote] = useState<boolean | null>(isUpvoted);
   const [ratingState, setRatingState] = useState(rating);
@@ -75,26 +77,30 @@ const Votes = ({
           (ratingState === 0 ? "" : ratingState > 0 ? " positive" : " negative")
         }
       >
-        <button
-          className={`article-data__thumb-up ${
-            isUpvote ? "active" : ""
-          } unstyled-btn`}
-          onClick={() => {
-            handleVote(true);
-          }}
-        >
-          <ThumbUp />
-        </button>
-        <button
-          className={`article-data__thumb-down ${
-            isUpvote === false ? "active" : ""
-          } unstyled-btn`}
-          onClick={() => {
-            handleVote(false);
-          }}
-        >
-          <ThumbDown />
-        </button>
+        {isRatingBtnsVisible && (
+          <>
+            <button
+              className={`article-data__thumb-up ${
+                isUpvote ? "active" : ""
+              } unstyled-btn`}
+              onClick={() => {
+                handleVote(true);
+              }}
+            >
+              <ThumbUp />
+            </button>
+            <button
+              className={`article-data__thumb-down ${
+                isUpvote === false ? "active" : ""
+              } unstyled-btn`}
+              onClick={() => {
+                handleVote(false);
+              }}
+            >
+              <ThumbDown />
+            </button>
+          </>
+        )}
         rating: <span>{ratingState}</span>
       </span>
     </div>

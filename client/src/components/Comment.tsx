@@ -134,6 +134,7 @@ const Comment = ({
               rating={commentData.rating}
               postURL="rating/comment/"
               body={{ comment: commentData.id }}
+              isRatingBtnsVisible={true}
             />
 
             {/* TODO "Look" link */}

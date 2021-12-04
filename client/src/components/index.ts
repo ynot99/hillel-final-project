@@ -11,6 +11,7 @@ import CustomEditor from "./CustomEditor";
 import Posts from "./Posts";
 import UserProfile from "./UserProfile";
 import Popup from "./Popup";
+import Settings from "./Settings";
 
 export {
   Header,
@@ -26,4 +27,5 @@ export {
   Feed,
   UserProfile,
   Popup,
+  Settings,
 };

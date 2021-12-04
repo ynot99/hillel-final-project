@@ -16,7 +16,14 @@ import {
   EditPost,
   Liked,
 } from "./routes";
-import { Footer, Header, NotFound, Navigation, Popup } from "./components";
+import {
+  Footer,
+  Header,
+  NotFound,
+  Navigation,
+  Popup,
+  Settings,
+} from "./components";
 import { useDispatch } from "react-redux";
 
 import { getUserDataAsync } from "./redux/userauth/userauthSlice";
@@ -48,6 +55,7 @@ const App = () => {
               {user ? (
                 <>
                   <Route path="/logout" element={<Logout />} />
+                  <Route path="/settings" element={<Settings />} />
                   <Route path="/post/edit/:postNum" element={<EditPost />} />
                   <Route path="/post/new" element={<NewPost />} />
                   <Route path="/following" element={<Followed />}>
