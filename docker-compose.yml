@@ -20,6 +20,8 @@ services:
       context: ./api
       dockerfile: ./Dockerfile
     image: ynot99/blog_django
+    volumes:
+      - ./api/media/avatars:/opt/blog/media/avatars
     networks:
       - blog_network
     ports:
