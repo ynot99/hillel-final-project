@@ -1,6 +1,7 @@
 #!/bin/sh
 
+# wait for db to load
 sleep 5
-pipenv run python3 manage.py migrate
+python3 manage.py migrate
 
-exec pipenv run python3 manage.py runserver 0.0.0.0:8000
+exec python3 manage.py runserver 0.0.0.0:8000
