@@ -12,13 +12,16 @@ const PostView = () => {
 
   useEffect(() => {
     promiseCopyPaste(
-      fetch(`/api/v1/blog/post/${pageParams["postNum"]}`, {
-        method: "GET",
-        headers: new Headers({
-          "Content-Type": "application/json",
-          ...getAuthTokenHeaders(),
-        }),
-      }),
+      fetch(
+        `${process.env.REACT_APP_BASE_URL}/api/v1/blog/post/${pageParams["postNum"]}`,
+        {
+          method: "GET",
+          headers: new Headers({
+            "Content-Type": "application/json",
+            ...getAuthTokenHeaders(),
+          }),
+        }
+      ),
       (result: any) => {
         setPostViewData(result);
       }

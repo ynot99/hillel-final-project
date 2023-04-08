@@ -18,14 +18,17 @@ const EditPost = () => {
 
   useEffect(() => {
     promiseCopyPaste(
-      fetch(`/api/v1/blog/post/auth/${postNum}`, {
-        method: "GET",
+      fetch(
+        `${process.env.REACT_APP_BASE_URL}/api/v1/blog/post/auth/${postNum}`,
+        {
+          method: "GET",
 
-        headers: new Headers({
-          "Content-Type": "application/json",
-          ...getAuthTokenHeaders(),
-        }),
-      }),
+          headers: new Headers({
+            "Content-Type": "application/json",
+            ...getAuthTokenHeaders(),
+          }),
+        }
+      ),
       (result: IPost) => {
         setHeading(result.header);
         setContent(
@@ -41,17 +44,20 @@ const EditPost = () => {
     const raw = convertToRaw(content.getCurrentContent());
 
     promiseCopyPaste(
-      fetch(`/api/v1/blog/post/auth/${postNum}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          header: heading,
-          content: JSON.stringify(raw),
-        }),
-        headers: new Headers({
-          "Content-Type": "application/json",
-          ...getAuthTokenHeaders(),
-        }),
-      }),
+      fetch(
+        `${process.env.REACT_APP_BASE_URL}/api/v1/blog/post/auth/${postNum}`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            header: heading,
+            content: JSON.stringify(raw),
+          }),
+          headers: new Headers({
+            "Content-Type": "application/json",
+            ...getAuthTokenHeaders(),
+          }),
+        }
+      ),
       (result: any) => {
         dispatch(addPopup("Post is successfully edited!"));
         navigate("/all");

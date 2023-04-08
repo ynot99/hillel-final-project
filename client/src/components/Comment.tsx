@@ -34,7 +34,7 @@ const Comment = ({
 
   const handleEdit = () => {
     promiseCopyPaste(
-      fetch(`/api/v1/blog/comment/`, {
+      fetch(`${process.env.REACT_APP_BASE_URL}/api/v1/blog/comment/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -59,7 +59,7 @@ const Comment = ({
       return;
     }
     promiseCopyPaste(
-      fetch(`/api/v1/blog/comment/`, {
+      fetch(`${process.env.REACT_APP_BASE_URL}/api/v1/blog/comment/`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

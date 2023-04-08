@@ -29,7 +29,7 @@ const CommentReplyForm = ({
     setIsLoading(true);
 
     promiseCopyPaste(
-      fetch("/api/v1/blog/comment/", {
+      fetch(process.env.REACT_APP_BASE_URL + "/api/v1/blog/comment/", {
         method: "POST",
         body: JSON.stringify({
           post: postID,
