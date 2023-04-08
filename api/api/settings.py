@@ -29,8 +29,16 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["api", "localhost", "127.0.0.1", "hillel-exam-api.onrender.com"]
+ALLOWED_HOSTS = [
+    "api",
+    "localhost",
+    "127.0.0.1",
+    "hillel-exam-api.onrender.com",
+]
 
+CORS_ALLOWED_ORIGINS = [
+    "https://hillel-exam-client.onrender.com",
+]
 
 # Application definition
 
@@ -45,6 +53,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "authapp",
     "blog",
+    "corsheaders",
     "django_cleanup.apps.CleanupConfig",
 ]
 
@@ -56,6 +65,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "api.urls"
