@@ -25,6 +25,8 @@ const PaginationPage = ({
 
   useEffect(() => {
     if (isNaN(currentPage) || currentPage < 1) return;
+    
+    if (fetchURL !== "") fetchURL += "/";
 
     promiseCopyPaste(
       fetch(
