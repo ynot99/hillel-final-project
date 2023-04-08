@@ -52,7 +52,7 @@ const Form = ({
     }
 
     promiseCopyPaste(
-      fetch(process.env.REACT_APP_BASE_URL + fetchurl, {
+      fetch(process.env.REACT_APP_BASE_URL + "/" + fetchurl, {
         method: "POST",
         body: JSON.stringify({ ...formData }),
         headers: {
