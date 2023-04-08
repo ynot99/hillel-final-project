@@ -39,7 +39,7 @@ const Votes = ({
     }
 
     promiseCopyPaste(
-      fetch(`/api/v1/blog/${postURL}`, {
+      fetch(`${process.env.REACT_APP_BASE_URL}/api/v1/blog/${postURL}`, {
         method: method,
         headers: new Headers({
           ...getAuthTokenHeaders(),

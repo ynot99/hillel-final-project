@@ -27,13 +27,18 @@ const PaginationPage = ({
     if (isNaN(currentPage) || currentPage < 1) return;
 
     promiseCopyPaste(
-      fetch(`${fetchURL}/?limit=${limit}&offset=${(currentPage - 1) * limit}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          ...getAuthTokenHeaders(),
-        },
-      }),
+      fetch(
+        `${process.env.REACT_APP_BASE_URL}${fetchURL}/?limit=${limit}&offset=${
+          (currentPage - 1) * limit
+        }`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            ...getAuthTokenHeaders(),
+          },
+        }
+      ),
       (result: PaginationResponse<any>) => {
         window.scrollTo(0, 0);
         setResponseData(result);
