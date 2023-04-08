@@ -28,7 +28,7 @@ const PaginationPage = ({
 
     promiseCopyPaste(
       fetch(
-        `${process.env.REACT_APP_BASE_URL}${fetchURL}/?limit=${limit}&offset=${
+        `${process.env.REACT_APP_BASE_URL}${fetchURL}?limit=${limit}&offset=${
           (currentPage - 1) * limit
         }`,
         {
