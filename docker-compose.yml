@@ -42,11 +42,11 @@ services:
     depends_on:
       - api
   nginx:
-    build:
-      context: ./nginx
-      dockerfile: ./Dockerfile
+    image: nginx:1.23.4
     ports:
       - 80:80
+    volumes:
+      - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf
     networks:
       - blog_network
     depends_on:
