@@ -1,13 +1,16 @@
-FROM node:12-alpine
+FROM node:12-alpine as build
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm ci --silent
+RUN npm install react-scripts@4.0.3 -g --silent
+COPY . ./
+RUN npm run build
 
-WORKDIR /opt/blog
-
-RUN apk update && apk add python3-dev make g++
-
-COPY ./package.json ./
-COPY ./yarn.lock ./
-RUN yarn install
-
-COPY ./ ./
-
-CMD ["yarn", "start"]
+# production environment
+FROM nginx:stable-alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/build /usr/share/nginx/html
+EXPOSE 81
+CMD ["nginx", "-g", "daemon off;"]

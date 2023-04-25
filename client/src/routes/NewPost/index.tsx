@@ -17,7 +17,7 @@ const NewPost = () => {
     const raw = convertToRaw(content.getCurrentContent());
 
     promiseCopyPaste(
-      fetch(process.env.REACT_APP_BASE_URL + "/api/v1/blog/post/create", {
+      fetch("/api/v1/blog/post/create", {
         method: "POST",
         body: JSON.stringify({
           header: heading,

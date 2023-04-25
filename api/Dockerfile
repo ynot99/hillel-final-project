@@ -1,19 +1,30 @@
-FROM alpine:3.14.2
+# Use the official Python base image
+FROM python:3.11
 
-WORKDIR /opt/blog
+# Keeps Python from generating .pyc files in the container
+ENV PYTHONDONTWRITEBYTECODE=1
 
-ENV PYTHONUNBUFFERED 1
+# Turns off buffering for easier container logging
+ENV PYTHONUNBUFFERED=1
 
-RUN apk update && apk add py3-pip python3-dev postgresql-dev zlib-dev jpeg-dev musl-dev gcc
+# Set the working directory in the container
+WORKDIR /app
 
-RUN apk add libjpeg
-COPY ./requirements.txt ./
-RUN pip3 install -r requirements.txt
+# Copy the requirements.txt file into the container
+COPY Pipfile Pipfile.lock ./
 
-COPY ./ ./
+# Install pipenv
+RUN pip install -U pipenv
 
+# Install the Python dependencies
+RUN pipenv install --system --deploy
+
+# Copy the rest of the application code into the container
+COPY . .
+
+# Expose the port that the application will run on
 EXPOSE 8000
 
-RUN chmod +x docker-entrypoint.sh
+COPY docker-entrypoint.sh /home/docker/entrypoint.sh
 
-ENTRYPOINT ["./docker-entrypoint.sh"]
+ENTRYPOINT ["/home/docker/entrypoint.sh"]

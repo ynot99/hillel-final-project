@@ -21,7 +21,7 @@ services:
       dockerfile: ./Dockerfile
     image: ynot99/blog_django
     volumes:
-      - ./api/media/avatars:/opt/blog/media/avatars
+      - ./api/images/avatars:/opt/blog/images/avatars
     networks:
       - blog_network
     ports:
@@ -38,20 +38,17 @@ services:
     networks:
       - blog_network
     ports:
-      - 3000:3000
+      - 3000:81
     depends_on:
       - api
-    env_file:
-      - ./conf/client.env
   nginx:
-    image: nginx:1.13
+    build:
+      context: ./nginx
+      dockerfile: ./Dockerfile
+    ports:
+      - 80:80
     networks:
       - blog_network
-    ports:
-      - 9999:80
     depends_on:
       - api
       - client
-    volumes:
-      - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./conf/nginx/mime.types:/etc/nginx/mime.types

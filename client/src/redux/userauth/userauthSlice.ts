@@ -31,7 +31,7 @@ export const getUserDataAsync = () => (dispatch: any) => {
   const token = localStorage.getItem("auth-token");
   if (!token) return;
   promiseCopyPaste(
-    fetch(process.env.REACT_APP_BASE_URL + "/api/v1/blog/user_profile", {
+    fetch("/api/v1/blog/user_profile", {
       method: "GET",
       headers: {
         Authorization: `Token ${token}`,

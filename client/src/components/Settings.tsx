@@ -29,7 +29,7 @@ const Settings = () => {
     if (!user) return;
 
     promiseCopyPaste(
-      fetch(process.env.REACT_APP_BASE_URL + "/api/v1/authapp/user/update", {
+      fetch("/api/v1/authapp/user/update", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -62,16 +62,13 @@ const Settings = () => {
         formData.append("avatar", result, result.name);
 
         promiseCopyPaste(
-          fetch(
-            process.env.REACT_APP_BASE_URL + "/api/v1/authapp/user/update",
-            {
-              method: "PUT",
-              headers: {
-                ...getAuthTokenHeaders(),
-              },
-              body: formData,
-            }
-          ),
+          fetch("/api/v1/authapp/user/update", {
+            method: "PUT",
+            headers: {
+              ...getAuthTokenHeaders(),
+            },
+            body: formData,
+          }),
           (result: IResult) => {
             dispatch(
               setUser({
@@ -90,7 +87,7 @@ const Settings = () => {
     if (!user) return;
 
     promiseCopyPaste(
-      fetch(process.env.REACT_APP_BASE_URL + "/api/v1/authapp/user/update", {
+      fetch("/api/v1/authapp/user/update", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
