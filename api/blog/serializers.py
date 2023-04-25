@@ -33,55 +33,43 @@ class BookmarkCreateSerializer(serializers.ModelSerializer):
         ]
 
 
-# TODO remove when figure out how to load images from dockerized django with nginx
-class TMPUserImageFieldSerializer(serializers.ModelSerializer):
-    avatar = serializers.SerializerMethodField("get_avatar")
-
-    def get_avatar(self, profile):
-        return "/api/media/" + profile.avatar.name
-
-    class Meta:
+class UserSerializer(serializers.ModelSerializer):
+    class Meta():
         model = get_user_model()
-        fields = ["avatar"]
-
-
-class UserSerializer(TMPUserImageFieldSerializer):
-    class Meta(TMPUserImageFieldSerializer.Meta):
-        # model = get_user_model()
-        fields = TMPUserImageFieldSerializer.Meta.fields + [
+        fields = [
             "id",
             "username",
             "first_name",
             "last_name",
-            # "avatar",
+            "avatar",
         ]
 
 
-class UserForPostSerializer(TMPUserImageFieldSerializer):
-    class Meta(TMPUserImageFieldSerializer.Meta):
-        # model = get_user_model()
-        fields = TMPUserImageFieldSerializer.Meta.fields + [
+class UserForPostSerializer(serializers.ModelSerializer):
+    class Meta():
+        model = get_user_model()
+        fields = [
             "id",
             "username",
-            # "avatar",
+            "avatar",
             "slug",
         ]
 
 
-class UserForUserFollowSerializer(TMPUserImageFieldSerializer):
-    class Meta(TMPUserImageFieldSerializer.Meta):
-        # model = get_user_model()
-        fields = TMPUserImageFieldSerializer.Meta.fields + [
+class UserForUserFollowSerializer(serializers.ModelSerializer):
+    class Meta():
+        model = get_user_model()
+        fields = [
             "id",
             "slug",
             "username",
             "first_name",
             "last_name",
-            # "avatar",
+            "avatar",
         ]
 
 
-class UserForProfileSerializer(TMPUserImageFieldSerializer):
+class UserForProfileSerializer(serializers.ModelSerializer):
     post_count = serializers.SerializerMethodField("get_post_count")
     comment_count = serializers.SerializerMethodField("get_comment_count")
     bookmark_count = serializers.SerializerMethodField("get_bookmark_count")
@@ -125,14 +113,14 @@ class UserForProfileSerializer(TMPUserImageFieldSerializer):
 
         return True
 
-    class Meta(TMPUserImageFieldSerializer.Meta):
-        # model = get_user_model()
-        fields = TMPUserImageFieldSerializer.Meta.fields + [
+    class Meta():
+        model = get_user_model()
+        fields = [
             "id",
             "first_name",
             "last_name",
             "username",
-            # "avatar",
+            "avatar",
             "post_count",
             "comment_count",
             "bookmark_count",

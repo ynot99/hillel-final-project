@@ -29,16 +29,13 @@ const Post = ({ postData, link }: PostProps) => {
       return;
     }
     promiseCopyPaste(
-      fetch(
-        `${process.env.REACT_APP_BASE_URL}/api/v1/blog/post/auth/${postData?.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            ...getAuthTokenHeaders(),
-          },
-        }
-      ),
+      fetch(`/api/v1/blog/post/auth/${postData?.id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthTokenHeaders(),
+        },
+      }),
       (result: any) => {
         setDeleted(true);
       },

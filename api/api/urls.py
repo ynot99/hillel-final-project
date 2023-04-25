@@ -22,9 +22,9 @@ from authapp.token import CustomAuthToken
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/v1/blog/", include("blog.urls")),
-    path("api/v1/authapp/", include("authapp.urls")),
-    path("api/token-auth", CustomAuthToken.as_view()),
+    path("v1/blog/", include("blog.urls")),
+    path("v1/authapp/", include("authapp.urls")),
+    path("token-auth", CustomAuthToken.as_view()),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

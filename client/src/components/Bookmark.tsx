@@ -74,7 +74,7 @@ const Bookmark = ({ id, isActive, count }: BookmarkProps) => {
     }
 
     promiseCopyPaste(
-      fetch(`${process.env.REACT_APP_BASE_URL}/api/v1/blog/bookmark/`, {
+      fetch("/api/v1/blog/bookmark/", {
         method: method,
         headers: new Headers({
           "Content-Type": "application/json",

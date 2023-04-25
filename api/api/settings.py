@@ -29,37 +29,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "api",
-    "localhost",
-    "127.0.0.1",
-    "hillel-exam-api.onrender.com",
-]
-
-CORS_ALLOWED_ORIGINS = [
-    "https://hillel-exam-client.onrender.com",
-]
-
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-]
-
-CORS_ALLOW_HEADERS = [
-    "accept",
-    "accept-encoding",
-    "authorization",
-    "content-type",
-    "dnt",
-    "origin",
-    "user-agent",
-    "x-csrftoken",
-    "x-requested-with",
-]
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -74,7 +44,6 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "authapp",
     "blog",
-    "corsheaders",
     "django_cleanup.apps.CleanupConfig",
 ]
 
@@ -86,7 +55,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "api.urls"
@@ -161,10 +129,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_URL = "/api/static/"
+STATIC_URL = "api/static/"
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/api/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "images")
+MEDIA_URL = "images/"
 
 # Rest Framework
 

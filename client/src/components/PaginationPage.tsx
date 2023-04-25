@@ -26,22 +26,16 @@ const PaginationPage = ({
   useEffect(() => {
     if (isNaN(currentPage) || currentPage < 1) return;
 
-    console.log("fetchURL: ", fetchURL);
     if (fetchURL[fetchURL.length - 1] !== "/") fetchURL += "/";
 
     promiseCopyPaste(
-      fetch(
-        `${process.env.REACT_APP_BASE_URL}${fetchURL}?limit=${limit}&offset=${
-          (currentPage - 1) * limit
-        }`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            ...getAuthTokenHeaders(),
-          },
-        }
-      ),
+      fetch(`${fetchURL}?limit=${limit}&offset=${(currentPage - 1) * limit}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthTokenHeaders(),
+        },
+      }),
       (result: PaginationResponse<any>) => {
         window.scrollTo(0, 0);
         setResponseData(result);

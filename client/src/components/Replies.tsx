@@ -40,14 +40,11 @@ const Replies = ({
     }
 
     promiseCopyPaste(
-      fetch(
-        `${process.env.REACT_APP_BASE_URL}/api/v1/blog/comment/reply_to/${commentID}`,
-        {
-          headers: {
-            ...getAuthTokenHeaders(),
-          },
-        }
-      ),
+      fetch(`/api/v1/blog/comment/reply_to/${commentID}`, {
+        headers: {
+          ...getAuthTokenHeaders(),
+        },
+      }),
       (result: Array<IComment>) => {
         setReplies(result);
         setIsRepliesVisible(true);

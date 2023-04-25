@@ -40,16 +40,13 @@ const UserProfile = () => {
 
   useEffect(() => {
     promiseCopyPaste(
-      fetch(
-        `${process.env.REACT_APP_BASE_URL}/api/v1/blog/user_profile/${profileSlug}`,
-        {
-          method: "GET",
-          headers: new Headers({
-            "Content-Type": "application/json",
-            ...getAuthTokenHeaders(),
-          }),
-        }
-      ),
+      fetch(`/api/v1/blog/user_profile/${profileSlug}`, {
+        method: "GET",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          ...getAuthTokenHeaders(),
+        }),
+      }),
       (result: IUser) => {
         setFollowing(result.is_followed_by_authorized_user);
         setProfile(result);
@@ -67,7 +64,7 @@ const UserProfile = () => {
       method = "DELETE";
     }
     promiseCopyPaste(
-      fetch(`${process.env.REACT_APP_BASE_URL}/api/v1/blog/user_follow/`, {
+      fetch("/api/v1/blog/user_follow/", {
         method: method,
         headers: new Headers({
           "Content-Type": "application/json",
