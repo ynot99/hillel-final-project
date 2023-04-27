@@ -10,6 +10,7 @@ djangorestframework = "*"
 pillow = "*"
 psycopg2-binary = "*"
 django-cleanup = "*"
+gunicorn = "*"
 
 [dev-packages]
 
