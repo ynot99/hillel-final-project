@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: api
+    env: python3
+    repo: https://github.com/ynot99/hillel-final-project.git
+    rootDir: api
+    buildCommand: python manage.py collectstatic --no-input && gunicorn api.wsgi --workers 4 --bind 0.0.0.0:8000
+    envVars:
+      - key: SECRET_KEY
+        value: ${{ secrets.SECRET_KEY }}
+      - key: DB_HOST
+        value: ${{ secrets.DB_HOST }}
+      - key: DB_NAME
+        value: ${{ secrets.DB_NAME }}
+      - key: DB_PASSWORD
+        value: ${{ secrets.DB_PASSWORD }}
+      - key: DB_PORT
+        value: ${{ secrets.DB_PORT }}
+      - key: DB_USER
+        value: ${{ secrets.DB_USER }}
+      - key: PIPENV_YES
+        value: ${{ secrets.PIPENV_YES }}
+      - key: PYTHON_VERSION
+        value: ${{ secrets.PYTHON_VERSION }}
+      - key: DEBUG
+        value: "False"
+
+  - name: client
+    buildCommand: |
+      cd client
+      npm install
+      npm run build --prod
+    env:
+      - key: NODE_ENV
+        value: production
+    staticPublishPath: client/build
+
+routes:
+  - path: /api/*
+    service: api
+  - path: /*
+    staticDir: client/build
