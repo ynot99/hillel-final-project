@@ -1,0 +1,13 @@
+[
+  {
+    "model": "blog.Post",
+    "pk": 1,
+    "fields": {
+      "header": "Beautiful House",
+      "author": 1,
+      "content": "Test content",
+      "created_at": "2019-01-01T00:00:00Z",
+      "updated_at": "2019-01-01T00:00:00Z"
+    }
+  }
+]

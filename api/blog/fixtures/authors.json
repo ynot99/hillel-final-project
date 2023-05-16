@@ -1,0 +1,14 @@
+[
+  {
+    "model": "authapp.User",
+    "pk": 1,
+    "fields": {
+      "username": "testuser",
+      "email": "test@test.com",
+      "avatar": null,
+      "first_name": "Test",
+      "last_name": "User",
+      "slug": "test-user"
+    }
+  }
+]

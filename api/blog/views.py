@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
-from rest_framework import exceptions, mixins
-from rest_framework import generics
+from rest_framework import exceptions, mixins, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
@@ -214,6 +213,11 @@ class PostsByUserProfileView(generics.ListAPIView):
     serializer_class = PostSerializer
 
     def get_queryset(self):
+        user = get_user_model()
+        try:
+            user.objects.get(pk=self.kwargs["pk"])
+        except user.DoesNotExist:
+            raise exceptions.NotFound("Author doesn't exist")
         return Post.objects.filter(author=self.kwargs["pk"])
 
 
@@ -308,4 +312,9 @@ class CommentUserProfileView(generics.ListAPIView):
     serializer_class = CommentForUserProfileSerializer
 
     def get_queryset(self):
+        user = get_user_model()
+        try:
+            user.objects.get(pk=self.kwargs["pk"])
+        except user.DoesNotExist:
+            raise exceptions.NotFound("Author doesn't exist")
         return Comment.objects.filter(user__pk=self.kwargs["pk"])

@@ -13,6 +13,11 @@ django-cleanup = "*"
 gunicorn = "*"
 
 [dev-packages]
+coverage = "*"
+
+[scripts]
+coverage_test = "coverage run --source='.' manage.py test"
+coverage_test_html = "coverage html"
 
 [requires]
 python_version = "3.11"

@@ -33,7 +33,7 @@ urlpatterns = [
     path(
         "post/create",
         PostCreateView.as_view(),
-        name="post_authorized",
+        name="post_create_authorized",
     ),
     path(
         "post/auth/<int:pk>",
